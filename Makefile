@@ -89,7 +89,7 @@ $(MAIN): $(OBJECTS)
 
 .PHONY: clean
 clean:
-	$(RM) $(OUTPUTMAIN)
+# $(RM) $(OUTPUTMAIN)
 	$(RM) $(call FIXPATH,$(OBJECTS))
 	$(RM) $(call FIXPATH,$(DEPS))
 	@echo Cleanup complete!
