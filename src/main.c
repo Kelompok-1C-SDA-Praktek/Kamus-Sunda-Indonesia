@@ -1,14 +1,15 @@
 #include "BTreeKamus.h"
 #include "NonRestricted.h"
-#include <stdio.h>
 
 int main()
 {
+    /* Deklarasi variabel */
     Address KamusTree;
     int Exit = 0;
-    while(!Exit)
-    {
-        Execute(Menu(), &KamusTree, &Exit);
-    }
+
+    /* Program utama */
+    while(!Exit) Execute(Menu(), &KamusTree, &Exit);
+
+    /* End program */
     return 0;
 }
