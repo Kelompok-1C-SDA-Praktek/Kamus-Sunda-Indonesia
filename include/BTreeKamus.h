@@ -1,6 +1,6 @@
 #ifndef BTREEKAMUS_H
 #define BTREEKAMUS_H
-
+#include "NonRestricted.h"
 /* Informasi Author
     Nama        :   1. Roy Aziz Barera (Ketua)
                     2. Naila Sania
@@ -14,7 +14,8 @@ typedef char *Infotype;
 
 typedef struct kamus
 {
-    Infotype Sunda, Indonesia;
+    AddressNodeNR Sunda, Indonesia;
+    Infotype Contoh;
 } Kamus;
 
 typedef struct binary *Address;
@@ -26,7 +27,9 @@ typedef struct binary
 } Binary;
 
 /* Modul */
-
+int Menu();
+void Stun();
+void Execute(int Choice, Address *Tree, int *Exit);
 
 
 
