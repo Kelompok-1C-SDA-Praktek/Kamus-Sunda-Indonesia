@@ -10,7 +10,7 @@ AddressNodeNR InitNR()
 
 Infotype CreateString(int Len)
 {
-    Infotype String = (Infotype) malloc((Len+1) * sizeof(char));
+    Infotype String = (Infotype) malloc((Len) * sizeof(char));
     return String;
 }
 

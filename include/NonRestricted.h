@@ -11,6 +11,8 @@ typedef struct nodeNR
 
 AddressNodeNR InitNR();
 
+Infotype CreateString(int Len);
+
 AddressNodeNR CreateNodeNR(Infotype Info);
 
 int NRIsEmpty(AddressNodeNR NR);
