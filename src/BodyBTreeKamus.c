@@ -1,5 +1,6 @@
 #include "BTreeKamus.h"
 #include <conio.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <windows.h>
@@ -33,13 +34,12 @@ int Menu()
 
 void Stun()
 {
-    printf("\nTekan tombol apapun untuk untuk melanjutkan...\n");
+    printf("\nTekan tombol apapun untuk melanjutkan...\n");
     getch();
 }
 
 void Execute(int Choice, Address *Tree, int *Exit)
 {
-    Infotype NewVocab;
     switch (Choice)
     {
     case 1:
@@ -48,8 +48,8 @@ void Execute(int Choice, Address *Tree, int *Exit)
         break;
     case 2:
         // Tambahkan kosakata baru kedalam kamus
-        Input(&NewVocab);
-        InsertToFile(NewVocab);
+        InsertKata(&(*Tree));
+        Stun();
         break;
     case 0:
         // Tambahkan kosakata baru kedalam kamus
@@ -115,7 +115,7 @@ void Input(Infotype *NewVocab)
                 if (LenOfVocab > 1)
                 {
                     /* Bebaskan memori null terminator terakhir */
-                    free((*NewVocab)[LenOfVocab - 1]);
+                    free(&(*NewVocab)[LenOfVocab - 1]);
                     /* Membuat index terakhir menjadi null terminator */
                     (*NewVocab)[LenOfVocab - 2] = 0;
                     /* Kurangi panjang kosakatanya */
@@ -139,5 +139,67 @@ void Input(Infotype *NewVocab)
             printf("Masukan kata: ");
             printf("%s", (*NewVocab));
         }
+    }
+}
+
+void InsertKata(Address *Tree)
+{
+    InputKamus(&(*Tree)->Kamus.Sunda);
+    InputKamus(&(*Tree)->Kamus.Indonesia);
+    InsertToFile(MergeKamus((*Tree)));
+}
+
+void InputKamus(AddressNodeNR *Bahasa)
+{
+    Infotype NewVocab;
+    bool FirstInit = false;
+    while (true)
+    {
+        Input(&NewVocab);
+        if (NewVocab != NULL)
+        {
+            if (!FirstInit)
+            {
+                (*Bahasa) = InitNR();
+                FirstInit = true;
+            }
+
+            InsertNR(&(*Bahasa), NewVocab);
+            printf("\nTekan tombol 'Enter' untuk menambahkan kosakata baru\n");
+            printf("yang memiliki arti yang sama\n\n");
+            printf("Tekan tombol apapun untuk melanjutkan...\n");
+            if (getch() != '\r')
+                break;
+        }
+    }
+    PrintNB(*Bahasa);
+}
+
+Infotype MergeKamus(Address Tree)
+{
+    Infotype Sunda = KamusToString(Tree->Kamus.Sunda);
+    Infotype Indonesia = KamusToString(Tree->Kamus.Indonesia);
+    strcat(Sunda, Indonesia);
+    return Sunda;
+}
+
+Infotype KamusToString(AddressNodeNR Bahasa)
+{
+    Infotype Result = CreateString(1);
+    Result[0] = 0;
+    while (Bahasa != NULL)
+    {
+        strcat(Result, Bahasa->Info);
+        Bahasa = Bahasa->Next;
+    }
+    return Result;
+}
+
+void ConvFromCharToChar(Infotype *Vocab, char CharFrom, char CharThis)
+{
+    for (int i = 0; i < strlen((*Vocab)); i++)
+    {
+        if ((*Vocab)[i] == CharFrom)
+            (*Vocab)[i] = CharThis;
     }
 }

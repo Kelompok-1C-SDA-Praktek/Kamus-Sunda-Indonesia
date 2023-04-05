@@ -33,4 +33,11 @@ void Execute(int Choice, Address *Tree, int *Exit);
 void InsertToFile(Infotype NewVocab);
 void Input(Infotype *NewVocab);
 
+void InsertKata(Address *Tree);
+void InputKamus(AddressNodeNR *Bahasa);
+
+Infotype MergeKamus(Address Tree);
+Infotype KamusToString(AddressNodeNR Bahasa);
+
+
 #endif // !BTREEKAMUS_H
