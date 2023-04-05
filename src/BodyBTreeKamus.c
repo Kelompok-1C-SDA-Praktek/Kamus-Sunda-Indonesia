@@ -87,57 +87,57 @@ void InsertToFile(Infotype NewVocab)
     }
 }
 
-// void Input(Infotype *NewVocab)
-// {
-//     /* Deklarasi variabel */
-//     char OneChar;
-//     int LenOfVocab = 1;
+void Input(Infotype *NewVocab)
+{
+    /* Deklarasi variabel */
+    char OneChar;
+    int LenOfVocab = 1;
 
-//     /* Alokasikan memori untuk menampung 1 karakter dan 1 null terminator */
-//     (*NewVocab) = CreateString(LenOfVocab + 1);
+    /* Alokasikan memori untuk menampung 1 karakter dan 1 null terminator */
+    (*NewVocab) = CreateString(LenOfVocab + 1);
 
-//     system("cls");
-//     printf("Masukan kata: ");
+    system("cls");
+    printf("Masukan kata: ");
 
-//     /* Mulai melakukan penginputan kata */
-//     while (OneChar != '\r') /* \r adalah karakter tombol Enter */
-//     {
-//         /* pengecekan apakah ada tombol yang ditekan atau tidak */
-//         if (kbhit())
-//         {
-//             /* Mengambil karakter di buffer keyboard terakhir dan memasukannya ke dalam variabel OneChar */
-//             OneChar = getch();
+    /* Mulai melakukan penginputan kata */
+    while (OneChar != '\r') /* \r adalah karakter tombol Enter */
+    {
+        /* pengecekan apakah ada tombol yang ditekan atau tidak */
+        if (kbhit())
+        {
+            /* Mengambil karakter di buffer keyboard terakhir dan memasukannya ke dalam variabel OneChar */
+            OneChar = getch();
 
-//             /* Jika yang ditekan adalah tombol 'backspace' maka hapus karakter terakhir saat ini */
-//             if (OneChar == '\b')
-//             {
-//                 /* Operasi ini sah jika panjang dari kata memiliki lebih dari 1 */
-//                 if (LenOfVocab > 1)
-//                 {
-//                     /* Bebaskan memori null terminator terakhir */
-//                     free((*NewVocab)[LenOfVocab - 1]);
-//                     /* Membuat index terakhir menjadi null terminator */
-//                     (*NewVocab)[LenOfVocab - 2] = 0;
-//                     /* Kurangi panjang kosakatanya */
-//                     LenOfVocab--;
-//                     /* Alokasikan ulang dengan panjang kosakata saat ini */
-//                     (*NewVocab) = (Infotype)realloc((*NewVocab), LenOfVocab * sizeof(char));
-//                 }
-//             }
-//             else
-//             {
-//                 /* Bisa menlakukan realokasi jika memiliki minimal 1 huruf */
-//                 if (LenOfVocab > 1)
-//                     (*NewVocab) = (Infotype)realloc((*NewVocab), LenOfVocab + 1 * sizeof(char));
-//                 /* Mengisi index yang sudah dialokasikan dengan karakter tombol yang ditekan */
-//                 (*NewVocab)[LenOfVocab - 1] = OneChar;
-//                 /* Menambahkan null terminator */
-//                 (*NewVocab)[LenOfVocab] = 0;
-//                 LenOfVocab++;
-//             }
-//             system("cls");
-//             printf("Masukan kata: ");
-//             printf("%s", (*NewVocab));
-//         }
-//     }
-// }
+            /* Jika yang ditekan adalah tombol 'backspace' maka hapus karakter terakhir saat ini */
+            if (OneChar == '\b')
+            {
+                /* Operasi ini sah jika panjang dari kata memiliki lebih dari 1 */
+                if (LenOfVocab > 1)
+                {
+                    /* Bebaskan memori null terminator terakhir */
+                    free((*NewVocab)[LenOfVocab - 1]);
+                    /* Membuat index terakhir menjadi null terminator */
+                    (*NewVocab)[LenOfVocab - 2] = 0;
+                    /* Kurangi panjang kosakatanya */
+                    LenOfVocab--;
+                    /* Alokasikan ulang dengan panjang kosakata saat ini */
+                    (*NewVocab) = (Infotype)realloc((*NewVocab), LenOfVocab * sizeof(char));
+                }
+            }
+            else
+            {
+                /* Bisa menlakukan realokasi jika memiliki minimal 1 huruf */
+                if (LenOfVocab > 1)
+                    (*NewVocab) = (Infotype)realloc((*NewVocab), LenOfVocab + 1 * sizeof(char));
+                /* Mengisi index yang sudah dialokasikan dengan karakter tombol yang ditekan */
+                (*NewVocab)[LenOfVocab - 1] = OneChar;
+                /* Menambahkan null terminator */
+                (*NewVocab)[LenOfVocab] = 0;
+                LenOfVocab++;
+            }
+            system("cls");
+            printf("Masukan kata: ");
+            printf("%s", (*NewVocab));
+        }
+    }
+}
