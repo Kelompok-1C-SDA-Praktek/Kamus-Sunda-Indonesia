@@ -2,9 +2,9 @@
 #define BTREEKAMUS_H
 #include "NonRestricted.h"
 /* Informasi Author
-    Nama        :   1. Roy Aziz Barera (Ketua)
-                    2. Naila Sania
-                    3. Retryanzani
+    Nama        :   1. Roy Aziz Barera (Ketua)  221524030
+                    2. Naila Saniyah Nur'aini   221524024
+                    3. Retryanzani Dwi Fauzan   221524028
     Kelas       :   1A
     Prodi       :   D4 Teknik Informatika
     Tanggal     :   29/3/2023
@@ -30,39 +30,7 @@ typedef struct binary
 int Menu();
 void Stun();
 void Execute(int Choice, Address *Tree, int *Exit);
-
-
-
-
-
-
-
-
-
-
-/* Inisialisasi Node */
-// void InitNode(Address *Node);
-/* Membuat alamat node yang dikirimkan di parameter akan bernilai null */
-
-/* Create Node */
-// Address CreateNode(Infotype Info);
-/* Mengirimkan alamat node yang nilainya Info nya berisi dari parameter Info */
-
-/* Insert */
-// void InsertBinary(Address *Root, Infotype Info);
-/* Akan menambahkan node baru pada root dengan membandingkan nilai dengan root
-dan jika setelah dibandingkan itu memiliki nilai yang lebih kecil maka akan disimpan
-di anak kiri sedangkan jika lebih besar maka akan disimpan di anak sebelah
-kanan berlaku bagi keturunannya
-*/
-
-/* Menampilkan data di dalam tree secara 
-InOrder */
-// void InOrderTraversal(Address Root);
-/* Membutuhkan alamat pertama dari sebuah Root
-Namun algoritma ini juga bisa digunakan untuk
-Menampilkan nilai dari turunan turunan tertentu
-*/
-
+void InsertToFile(Infotype NewVocab);
+void Input(Infotype *NewVocab);
 
 #endif // !BTREEKAMUS_H
