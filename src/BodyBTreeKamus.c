@@ -3,10 +3,37 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <windows.h>
 #include <unistd.h>
 
 const char FileKamus[26] = "Kamus-Sunda-Indonesia.dat";
+
+HWND WINAPI GetConsoleWindowNT(void)
+{
+    typedef HWND WINAPI (*GetConsoleWindowT)(void);
+
+    GetConsoleWindowT GetConsoleWindow;
+
+    HMODULE hk32Lib = GetModuleHandle(TEXT("KERNEL32.DLL"));
+
+    GetConsoleWindow = (GetConsoleWindowT)GetProcAddress(hk32Lib, TEXT("GetConsoleWindow"));
+    if (GetConsoleWindow == NULL)
+    {
+        return NULL;
+    }
+    return GetConsoleWindow();
+}
+
+void Koor(int Baris, int Kolom)
+{
+    HANDLE h;
+    COORD c;
+    c.Y = Baris;
+    c.X = Kolom;
+    h = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleCursorPosition(h, c);
+}
+
+/* ============================================== */
 
 int Menu()
 {
@@ -48,8 +75,8 @@ void Execute(int Choice, Address *Tree, int *Exit)
         break;
     case 2:
         // Tambahkan kosakata baru kedalam kamus
+        system("cls");
         InsertKata(&(*Tree));
-        Stun();
         break;
     case 0:
         // Tambahkan kosakata baru kedalam kamus
@@ -89,64 +116,56 @@ void InsertToFile(Infotype NewVocab)
 
 void Input(Infotype *NewVocab)
 {
-    /* Deklarasi variabel */
-    char OneChar;
-    int LenOfVocab = 1;
+    char Buffer[1024];
+    int LenOfVocab = 0;
 
-    /* Alokasikan memori untuk menampung 1 karakter dan 1 null terminator */
-    (*NewVocab) = CreateString(LenOfVocab + 1);
-
-    system("cls");
     printf("Masukan kata: ");
 
     /* Mulai melakukan penginputan kata */
-    while (OneChar != '\r') /* \r adalah karakter tombol Enter */
-    {
-        /* pengecekan apakah ada tombol yang ditekan atau tidak */
-        if (kbhit())
-        {
-            /* Mengambil karakter di buffer keyboard terakhir dan memasukannya ke dalam variabel OneChar */
-            OneChar = getch();
+    /* Mengambil input dari user */
+    scanf(" %[^\n]", Buffer);
 
-            /* Jika yang ditekan adalah tombol 'backspace' maka hapus karakter terakhir saat ini */
-            if (OneChar == '\b')
-            {
-                /* Operasi ini sah jika panjang dari kata memiliki lebih dari 1 */
-                if (LenOfVocab > 1)
-                {
-                    /* Bebaskan memori null terminator terakhir */
-                    free(&(*NewVocab)[LenOfVocab - 1]);
-                    /* Membuat index terakhir menjadi null terminator */
-                    (*NewVocab)[LenOfVocab - 2] = 0;
-                    /* Kurangi panjang kosakatanya */
-                    LenOfVocab--;
-                    /* Alokasikan ulang dengan panjang kosakata saat ini */
-                    (*NewVocab) = (Infotype)realloc((*NewVocab), LenOfVocab * sizeof(char));
-                }
-            }
-            else
-            {
-                /* Bisa menlakukan realokasi jika memiliki minimal 1 huruf */
-                if (LenOfVocab > 1)
-                    (*NewVocab) = (Infotype)realloc((*NewVocab), LenOfVocab + 1 * sizeof(char));
-                /* Mengisi index yang sudah dialokasikan dengan karakter tombol yang ditekan */
-                (*NewVocab)[LenOfVocab - 1] = OneChar;
-                /* Menambahkan null terminator */
-                (*NewVocab)[LenOfVocab] = 0;
-                LenOfVocab++;
-            }
-            system("cls");
-            printf("Masukan kata: ");
-            printf("%s", (*NewVocab));
-        }
+    /* Menghilangkan newline character */
+    LenOfVocab = strlen(Buffer);
+
+    /* Jika input kosong, kembali ke menu */
+    if (LenOfVocab != 0)
+    {
+
+        /* Mengalokasikan memori yang cukup untuk menyimpan kosakata */
+        (*NewVocab) = CreateString(LenOfVocab + 2);
+
+        /* Mengkopi input ke dalam memori yang baru dialokasikan */
+        strcpy((*NewVocab), Buffer);
+        strcat((*NewVocab), ".");
     }
 }
 
 void InsertKata(Address *Tree)
 {
-    InputKamus(&(*Tree)->Kamus.Sunda);
-    InputKamus(&(*Tree)->Kamus.Indonesia);
-    InsertToFile(MergeKamus((*Tree)));
+    Address NewTree = (Address)malloc(sizeof(Binary));
+
+    system("cls");
+    printf("Saat ini anda akan menambahkan kosakata bahasa Sunda\n");
+    InputKamus(&NewTree->Kamus.Sunda);
+
+    system("cls");
+    printf("Saat ini anda akan menambahkan kosakata bahasa Indonesia\n");
+    InputKamus(&NewTree->Kamus.Indonesia);
+
+    printf("Ingin menambahkan contohnya?\n");
+    printf("Tekan tombol [Enter] jika iya...\n");
+    printf("Tekan tombol lain untuk melewati tahapan ini...\n");
+    if (getch() == '\r')
+    {
+        system("cls");
+        printf("Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n");
+        InputKamus(&NewTree->Kamus.Contoh);
+    }
+    else
+        NewTree->Kamus.Contoh = NULL;
+
+    InsertToFile(MergeKamus(NewTree));
 }
 
 void InputKamus(AddressNodeNR *Bahasa)
@@ -156,6 +175,7 @@ void InputKamus(AddressNodeNR *Bahasa)
     while (true)
     {
         Input(&NewVocab);
+        system("cls");
         if (NewVocab != NULL)
         {
             if (!FirstInit)
@@ -163,16 +183,16 @@ void InputKamus(AddressNodeNR *Bahasa)
                 (*Bahasa) = InitNR();
                 FirstInit = true;
             }
-
             InsertNR(&(*Bahasa), NewVocab);
-            printf("\nTekan tombol 'Enter' untuk menambahkan kosakata baru\n");
+            printf("\n");
+            PrintNB(*Bahasa);
+            printf("\nTekan tombol [Enter] untuk menambahkan kosakata baru\n");
             printf("yang memiliki arti yang sama\n\n");
             printf("Tekan tombol apapun untuk melanjutkan...\n");
             if (getch() != '\r')
                 break;
         }
     }
-    PrintNB(*Bahasa);
 }
 
 Infotype MergeKamus(Address Tree)
@@ -180,6 +200,23 @@ Infotype MergeKamus(Address Tree)
     Infotype Sunda = KamusToString(Tree->Kamus.Sunda);
     Infotype Indonesia = KamusToString(Tree->Kamus.Indonesia);
     strcat(Sunda, Indonesia);
+    if (Tree->Kamus.Contoh != NULL)
+    {
+        Sunda[strlen(Sunda) - 1] = '.';
+        Infotype Contoh = CreateString(2);
+        Contoh[0] = 0;
+        while (Tree->Kamus.Contoh != NULL)
+        {
+            RefactorContoh(&(Tree)->Kamus.Contoh->Info);
+            strcat(Contoh, Tree->Kamus.Contoh->Info);
+            Tree->Kamus.Contoh = Tree->Kamus.Contoh->Next;
+        }
+        strcat(Contoh, "\n");
+        strcat(Sunda, Contoh);
+    }
+    else
+        Sunda[strlen(Sunda) - 1] = '\n';
+
     return Sunda;
 }
 
@@ -189,6 +226,10 @@ Infotype KamusToString(AddressNodeNR Bahasa)
     Result[0] = 0;
     while (Bahasa != NULL)
     {
+        if (Bahasa->Next == NULL)
+            ConvFromCharToChar(&(*Bahasa).Info, '.', '=');
+        else
+            ConvFromCharToChar(&(*Bahasa).Info, '.', ',');
         strcat(Result, Bahasa->Info);
         Bahasa = Bahasa->Next;
     }
@@ -197,9 +238,22 @@ Infotype KamusToString(AddressNodeNR Bahasa)
 
 void ConvFromCharToChar(Infotype *Vocab, char CharFrom, char CharThis)
 {
-    for (int i = 0; i < strlen((*Vocab)); i++)
+    for (unsigned int i = 0; i < strlen(*Vocab); i++)
     {
         if ((*Vocab)[i] == CharFrom)
             (*Vocab)[i] = CharThis;
     }
+}
+
+void RefactorContoh(Infotype *Contoh)
+{
+    Infotype Buka = "(";
+    Infotype Tutup = ");";
+    Infotype Temp = (Infotype)malloc((strlen(*Contoh) + 3) * sizeof(char));
+    strcpy(Temp, Buka);
+    strcat(Temp, (*Contoh));
+    strcat(Temp, Tutup);
+
+    free(*Contoh);
+    *Contoh = Temp;
 }

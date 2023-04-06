@@ -1,6 +1,8 @@
 #ifndef BTREEKAMUS_H
 #define BTREEKAMUS_H
 #include "NonRestricted.h"
+#include <windows.h>
+
 /* Informasi Author
     Nama        :   1. Roy Aziz Barera (Ketua)  221524030
                     2. Naila Saniyah Nur'aini   221524024
@@ -14,8 +16,8 @@ typedef char *Infotype;
 
 typedef struct kamus
 {
-    AddressNodeNR Sunda, Indonesia;
-    Infotype Contoh;
+    AddressNodeNR Sunda, Indonesia, Contoh;
+    // Infotype Contoh;
 } Kamus;
 
 typedef struct binary *Address;
@@ -25,6 +27,10 @@ typedef struct binary
     Address Left, Right;
     Kamus Kamus;
 } Binary;
+
+/* Modul amogus-9 */
+HWND WINAPI GetConsoleWindowNT(void);
+void Koor(int Baris, int Kolom);
 
 /* Modul */
 int Menu();
@@ -39,5 +45,8 @@ void InputKamus(AddressNodeNR *Bahasa);
 Infotype MergeKamus(Address Tree);
 Infotype KamusToString(AddressNodeNR Bahasa);
 
+void ConvFromCharToChar(Infotype *Vocab, char CharFrom, char CharThis);
+
+void RefactorContoh(Infotype *Contoh);
 
 #endif // !BTREEKAMUS_H
