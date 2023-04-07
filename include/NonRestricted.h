@@ -11,7 +11,7 @@ typedef struct nodeNR
 
 AddressNodeNR InitNR();
 
-Infotype CreateString(int Len);
+Infotype AlokString(int Len);
 
 AddressNodeNR CreateNodeNR(Infotype Info);
 

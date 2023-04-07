@@ -4,7 +4,7 @@
 int main()
 {
     /* Deklarasi variabel */
-    Address KamusTree;
+    Address KamusTree = InitTree();
     int Exit = 0;
 
     /* Program utama */
@@ -16,5 +16,6 @@ int main()
     while(!Exit) Execute(Menu(), &KamusTree, &Exit);
 
     /* End program */
+    ExitApps();
     return 0;
 }

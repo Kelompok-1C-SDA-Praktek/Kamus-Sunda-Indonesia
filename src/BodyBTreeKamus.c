@@ -4,8 +4,33 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <ctype.h>
+
+/* Define Kode Warna */
+#define FG_BLACK 0x00
+#define FG_BLUE 0x01
+#define FG_GREEN 0x02
+#define FG_CYAN 0x03
+#define FG_RED 0x04
+#define FG_MAGENTA 0x05
+#define FG_YELLOW 0x06
+#define FG_WHITE 0x07
+
+#define BG_BLACK 0x00
+#define BG_BLUE 0x10
+#define BG_GREEN 0x20
+#define BG_CYAN 0x30
+#define BG_RED 0x40
+#define BG_MAGENTA 0x50
+#define BG_YELLOW 0x60
+#define BG_WHITE 0x70
+
+/* End Define*/
 
 const char FileKamus[26] = "Kamus-Sunda-Indonesia.dat";
+
+/* ==================================================== */
+/* ================= Area Coding Roy ================== */
 
 HWND WINAPI GetConsoleWindowNT(void)
 {
@@ -34,6 +59,37 @@ void Koor(int Baris, int Kolom)
 }
 
 /* ============================================== */
+void SetColor(int kode1, int kode2)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, kode1 | kode2);
+}
+
+void DefaultColor()
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, BG_BLACK | FG_WHITE);
+}
+
+void ErrorMsg(Infotype ErrorMessage)
+{
+    SetColor(BG_RED, FG_BLACK);
+    printf("%s", ErrorMessage);
+    DefaultColor();
+}
+
+void ExitApps()
+{
+    SetColor(BG_BLUE, FG_WHITE);
+    printf("Terima kasih telah menggunakan aplikasi kami (^_^) \n");
+    printf("Keluar aplikasi");
+    SetColor(FG_WHITE, BG_RED);
+    for (int i = 1; i <= 3; i++)
+    {
+        printf(".");
+        sleep(1);
+    }
+}
 
 int Menu()
 {
@@ -55,15 +111,33 @@ int Menu()
 
     printf("Pilihan anda tidak ada...\n");
     sleep(1.5);
+    fflush(stdin);
     Choice = Menu();
     return Choice;
 }
 
 void Stun()
 {
+    SetColor(BG_GREEN, FG_BLACK);
     printf("\nTekan tombol apapun untuk melanjutkan...\n");
+    Koor(0, 0);
     getch();
+    DefaultColor();
 }
+
+bool Validasi()
+{
+    char Choice = ' ';
+    printf("Tekan tombol [Y] jika iya...\n");
+    printf("Tekan tombol [N] jika tidak...\n");
+    while ((Choice != 'Y') && (Choice != 'N'))
+    {
+        Choice = toupper(getch());
+    }
+    return (Choice == 'Y');
+}
+
+/* ============================================== */
 
 void Execute(int Choice, Address *Tree, int *Exit)
 {
@@ -71,6 +145,9 @@ void Execute(int Choice, Address *Tree, int *Exit)
     {
     case 1:
         // Menampilkan isi kamus Sunda secara traversal InOrder
+        system("cls");
+        printf("Kamus:\n");
+        ((*Tree) == NULL) ? ErrorMsg("Kamus tidak terdeteksi...") : PrintTree((*Tree));
         Stun();
         break;
     case 2:
@@ -81,11 +158,39 @@ void Execute(int Choice, Address *Tree, int *Exit)
     case 0:
         // Tambahkan kosakata baru kedalam kamus
         printf("Apakah anda yakin untuk keluar?\n");
-        printf("Tekan tombol 'Enter' jika ingin keluar, \ntekan tombol apapun untuk membatalkan\n");
-        if (getch() == 13)
+        if (Validasi())
             *Exit = 1;
         break;
     }
+}
+
+void InsertKata(Address *Tree)
+{
+    Address NewTree = AlokTree(); // aloktree
+
+    system("cls");
+    printf("Saat ini anda akan menambahkan kosakata bahasa Sunda\n");
+    InputKamus(&NewTree->Kamus.Sunda);
+
+    system("cls");
+    printf("Saat ini anda akan menambahkan kosakata bahasa Indonesia\n");
+    InputKamus(&NewTree->Kamus.Indonesia);
+
+    system("cls");
+    printf("Ingin menambahkan contohnya?\n");
+    printf("Tekan tombol [Enter] jika iya...\n");
+    printf("Tekan tombol lain untuk melewati tahap ini...\n");
+    if (getch() == '\r')
+    {
+        system("cls");
+        printf("Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n");
+        InputKamus(&NewTree->Kamus.Contoh);
+    }
+    else
+        NewTree->Kamus.Contoh = NULL;
+
+    InsertToFile(MergeKamus(NewTree->Kamus));
+    InsertToTree(&(*Tree), NewTree->Kamus);
 }
 
 void InsertToFile(Infotype NewVocab)
@@ -112,60 +217,6 @@ void InsertToFile(Infotype NewVocab)
         printf("\nSukses menambahkan kosakata baru ke dalam file\n");
         Stun();
     }
-}
-
-void Input(Infotype *NewVocab)
-{
-    char Buffer[1024];
-    int LenOfVocab = 0;
-
-    printf("Masukan kata: ");
-
-    /* Mulai melakukan penginputan kata */
-    /* Mengambil input dari user */
-    scanf(" %[^\n]", Buffer);
-
-    /* Menghilangkan newline character */
-    LenOfVocab = strlen(Buffer);
-
-    /* Jika input kosong, kembali ke menu */
-    if (LenOfVocab != 0)
-    {
-
-        /* Mengalokasikan memori yang cukup untuk menyimpan kosakata */
-        (*NewVocab) = CreateString(LenOfVocab + 2);
-
-        /* Mengkopi input ke dalam memori yang baru dialokasikan */
-        strcpy((*NewVocab), Buffer);
-        strcat((*NewVocab), ".");
-    }
-}
-
-void InsertKata(Address *Tree)
-{
-    Address NewTree = (Address)malloc(sizeof(Binary));
-
-    system("cls");
-    printf("Saat ini anda akan menambahkan kosakata bahasa Sunda\n");
-    InputKamus(&NewTree->Kamus.Sunda);
-
-    system("cls");
-    printf("Saat ini anda akan menambahkan kosakata bahasa Indonesia\n");
-    InputKamus(&NewTree->Kamus.Indonesia);
-
-    printf("Ingin menambahkan contohnya?\n");
-    printf("Tekan tombol [Enter] jika iya...\n");
-    printf("Tekan tombol lain untuk melewati tahapan ini...\n");
-    if (getch() == '\r')
-    {
-        system("cls");
-        printf("Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n");
-        InputKamus(&NewTree->Kamus.Contoh);
-    }
-    else
-        NewTree->Kamus.Contoh = NULL;
-
-    InsertToFile(MergeKamus(NewTree));
 }
 
 void InputKamus(AddressNodeNR *Bahasa)
@@ -195,21 +246,47 @@ void InputKamus(AddressNodeNR *Bahasa)
     }
 }
 
-Infotype MergeKamus(Address Tree)
+void Input(Infotype *NewVocab)
 {
-    Infotype Sunda = KamusToString(Tree->Kamus.Sunda);
-    Infotype Indonesia = KamusToString(Tree->Kamus.Indonesia);
+    char Buffer[1024];
+    int LenOfVocab = 0;
+
+    printf("Masukan kata: ");
+
+    /* Mulai melakukan penginputan kata */
+    /* Mengambil input dari user */
+    scanf(" %[^\n]", Buffer);
+
+    /* Menghilangkan newline character */
+    LenOfVocab = strlen(Buffer);
+
+    if (LenOfVocab != 0)
+    {
+        /* Mengalokasikan memori yang cukup untuk menyimpan kosakata */
+        (*NewVocab) = AlokString(LenOfVocab + 2);
+
+        /* Mengkopi input ke dalam memori yang baru dialokasikan */
+        strcpy((*NewVocab), Buffer);
+        strcat((*NewVocab), ".");
+    }
+    fflush(stdin);
+}
+
+Infotype MergeKamus(Kamus Kamus)
+{
+    Infotype Sunda = KamusToString(Kamus.Sunda);
+    Infotype Indonesia = KamusToString(Kamus.Indonesia);
     strcat(Sunda, Indonesia);
-    if (Tree->Kamus.Contoh != NULL)
+    if (Kamus.Contoh != NULL)
     {
         Sunda[strlen(Sunda) - 1] = '.';
-        Infotype Contoh = CreateString(2);
+        Infotype Contoh = AlokString(2);
         Contoh[0] = 0;
-        while (Tree->Kamus.Contoh != NULL)
+        while (Kamus.Contoh != NULL)
         {
-            RefactorContoh(&(Tree)->Kamus.Contoh->Info);
-            strcat(Contoh, Tree->Kamus.Contoh->Info);
-            Tree->Kamus.Contoh = Tree->Kamus.Contoh->Next;
+            RefactorContoh(&Kamus.Contoh->Info);
+            strcat(Contoh, Kamus.Contoh->Info);
+            Kamus.Contoh = Kamus.Contoh->Next;
         }
         strcat(Contoh, "\n");
         strcat(Sunda, Contoh);
@@ -222,18 +299,24 @@ Infotype MergeKamus(Address Tree)
 
 Infotype KamusToString(AddressNodeNR Bahasa)
 {
-    Infotype Result = CreateString(1);
-    Result[0] = 0;
-    while (Bahasa != NULL)
+    if (Bahasa != NULL)
     {
-        if (Bahasa->Next == NULL)
-            ConvFromCharToChar(&(*Bahasa).Info, '.', '=');
-        else
-            ConvFromCharToChar(&(*Bahasa).Info, '.', ',');
-        strcat(Result, Bahasa->Info);
-        Bahasa = Bahasa->Next;
+        Infotype Result = AlokString(1);
+        Result[0] = 0;
+        int Len = 0;
+        while (Bahasa != NULL)
+        {
+            if (Bahasa->Next == NULL)
+                ConvFromCharToChar(&(*Bahasa).Info, '.', '=');
+            else
+                ConvFromCharToChar(&(*Bahasa).Info, '.', ',');
+            Result = (Infotype) realloc(Result, (Len + strlen(Bahasa->Info)) * sizeof(char));
+            strcat(Result, Bahasa->Info);
+            Bahasa = Bahasa->Next;
+        }
+        return Result;
     }
-    return Result;
+    return NULL;
 }
 
 void ConvFromCharToChar(Infotype *Vocab, char CharFrom, char CharThis)
@@ -256,4 +339,93 @@ void RefactorContoh(Infotype *Contoh)
 
     free(*Contoh);
     *Contoh = Temp;
+}
+
+Address InitTree()
+{
+    return NULL;
+}
+
+void PrintKamus(Kamus Kamus)
+{
+    SetColor(BG_GREEN, FG_BLACK);
+    printf(" Sunda \t");
+    SetColor(BG_CYAN, FG_BLACK);
+    printf(" Indonesia \n");
+
+    Kamus.Sunda->Info = KamusToString(Kamus.Sunda);
+    Kamus.Indonesia->Info = KamusToString(Kamus.Indonesia);
+    ConvFromCharToChar(&Kamus.Sunda->Info, '=', '.');
+    ConvFromCharToChar(&Kamus.Indonesia->Info, '=', '.');
+
+    SetColor(BG_GREEN, FG_BLACK);
+    printf(" %s ", Kamus.Sunda->Info);
+
+    DefaultColor();
+    printf("  ");
+    SetColor(BG_YELLOW, FG_BLACK);
+    printf("=");
+    DefaultColor();
+    printf("  ");
+
+    SetColor(BG_CYAN, FG_BLACK);
+    printf(" %s ", Kamus.Indonesia->Info);
+
+    SetColor(BG_MAGENTA, FG_WHITE);
+    printf("\nContoh Penggunaan:\n");
+    PrintNB(Kamus.Contoh);
+    printf("\n");
+    DefaultColor();
+}
+
+void PrintTree(Address Root)
+{
+    if (Root != NULL)
+    {
+        PrintTree(Root->Left);
+        PrintKamus(Root->Kamus);
+        PrintTree(Root->Right);
+    }
+}
+
+/* =============== End Of Coding Area Roy ============= */
+
+Address AlokTree()
+{
+    Address NewTree = (Address)malloc(sizeof(Binary));
+    NewTree->Height = 1;
+    NewTree->Left = NULL;
+    NewTree->Right = NULL;
+    NewTree->Kamus.Sunda = NULL;
+    NewTree->Kamus.Indonesia = NULL;
+    NewTree->Kamus.Contoh = NULL;
+    return NewTree;
+}
+
+Address CreateTree(Kamus Kamus)
+{
+    Address NewTree = AlokTree();
+    if (NewTree != NULL)
+    {
+        NewTree->Height = 1;
+        NewTree->Kamus = Kamus;
+        NewTree->Left = NULL;
+        NewTree->Right = NULL;
+    }
+    else
+    {
+        ErrorMsg("Terjadi kesalahan saat membuat atribut kamus...");
+        Stun();
+    }
+    return NewTree;
+}
+
+void InsertToTree(Address *Tree, Kamus Kamus)
+{
+    if (*Tree == NULL)
+        (*Tree) = CreateTree(Kamus);
+    else if (strcmp(Kamus.Sunda->Info, (*Tree)->Kamus.Sunda->Info) < 0) // Jika Kamus sunda yang baru lebih kecil dari kamus yang lama
+        InsertToTree(&(*Tree)->Left, Kamus);
+    else
+        InsertToTree(&(*Tree)->Right, Kamus);
 }
