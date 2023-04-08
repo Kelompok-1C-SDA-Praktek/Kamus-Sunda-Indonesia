@@ -12,13 +12,11 @@
     Prodi       :   D4 Teknik Informatika
     Tanggal     :   29/3/2023
 */
-
-typedef char *Infotype;
+#define MAX_BUFFER 4092
 
 typedef struct kamus
 {
     AddressNodeNR Sunda, Indonesia, Contoh;
-    // Infotype Contoh;
 } Kamus;
 
 typedef struct binary *Address;

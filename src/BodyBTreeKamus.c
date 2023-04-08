@@ -25,6 +25,8 @@
 #define BG_YELLOW 0x60
 #define BG_WHITE 0x70
 
+#define NONE 0
+
 /* End Define*/
 
 const char FileKamus[26] = "Kamus-Sunda-Indonesia.dat";
@@ -74,7 +76,7 @@ void DefaultColor()
 void ErrorMsg(Infotype ErrorMessage)
 {
     SetColor(BG_RED, FG_BLACK);
-    printf("%s", ErrorMessage);
+    printf("%s\n", ErrorMessage);
     DefaultColor();
 }
 
@@ -94,7 +96,7 @@ void ExitApps()
 int Menu()
 {
     int Choice;
-    char ChoiceString[1024];
+    char ChoiceString[MAX_BUFFER];
     system("cls");
     printf("\nMenu\n");
     printf("1. Tampilkan isi kamus Sunda - Indonesia\n");
@@ -178,9 +180,7 @@ void InsertKata(Address *Tree)
 
     system("cls");
     printf("Ingin menambahkan contohnya?\n");
-    printf("Tekan tombol [Enter] jika iya...\n");
-    printf("Tekan tombol lain untuk melewati tahap ini...\n");
-    if (getch() == '\r')
+    if (Validasi())
     {
         system("cls");
         printf("Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n");
@@ -237,10 +237,8 @@ void InputKamus(AddressNodeNR *Bahasa)
             InsertNR(&(*Bahasa), NewVocab);
             printf("\n");
             PrintNB(*Bahasa);
-            printf("\nTekan tombol [Enter] untuk menambahkan kosakata baru\n");
-            printf("yang memiliki arti yang sama\n\n");
-            printf("Tekan tombol apapun untuk melanjutkan...\n");
-            if (getch() != '\r')
+            printf("\nTambahkan kosakata lain yang mirip?\n");
+            if (!Validasi())
                 break;
         }
     }
@@ -248,7 +246,7 @@ void InputKamus(AddressNodeNR *Bahasa)
 
 void Input(Infotype *NewVocab)
 {
-    char Buffer[1024];
+    char Buffer[MAX_BUFFER];
     int LenOfVocab = 0;
 
     printf("Masukan kata: ");
@@ -257,17 +255,17 @@ void Input(Infotype *NewVocab)
     /* Mengambil input dari user */
     scanf(" %[^\n]", Buffer);
 
-    /* Menghilangkan newline character */
     LenOfVocab = strlen(Buffer);
 
     if (LenOfVocab != 0)
     {
         /* Mengalokasikan memori yang cukup untuk menyimpan kosakata */
-        (*NewVocab) = AlokString(LenOfVocab + 2);
+        (*NewVocab) = AlokString(LenOfVocab + 2); // 2 untuk . dan \n
 
         /* Mengkopi input ke dalam memori yang baru dialokasikan */
         strcpy((*NewVocab), Buffer);
         strcat((*NewVocab), ".");
+        (*NewVocab)[LenOfVocab+2] = 0;
     }
     fflush(stdin);
 }
@@ -276,25 +274,39 @@ Infotype MergeKamus(Kamus Kamus)
 {
     Infotype Sunda = KamusToString(Kamus.Sunda);
     Infotype Indonesia = KamusToString(Kamus.Indonesia);
-    strcat(Sunda, Indonesia);
+    int Len = strlen(Sunda) + strlen(Indonesia);
+    Infotype Result = AlokString(Len + 2);
+    strcpy(Result, Sunda);
+    strcat(Result, Indonesia);
     if (Kamus.Contoh != NULL)
     {
-        Sunda[strlen(Sunda) - 1] = '.';
-        Infotype Contoh = AlokString(2);
+        Result[Len+1] = 0;
+        Result[Len] = '.';
+        Infotype Contoh = AlokString(1);
         Contoh[0] = 0;
+        int LenContoh = 0;
         while (Kamus.Contoh != NULL)
         {
             RefactorContoh(&Kamus.Contoh->Info);
+            LenContoh += strlen(Contoh) + strlen(Kamus.Contoh->Info);
+            Contoh = (Infotype)realloc(Contoh, (LenContoh + 1) * sizeof(char));
             strcat(Contoh, Kamus.Contoh->Info);
+            Contoh[LenContoh] = 0;
             Kamus.Contoh = Kamus.Contoh->Next;
         }
+        Contoh = (Infotype)realloc(Contoh, (LenContoh + 2) * sizeof(char));
         strcat(Contoh, "\n");
-        strcat(Sunda, Contoh);
+        Contoh[LenContoh+1] = 0;
+        Result = realloc(Result, (Len+LenContoh+2) * sizeof(char));
+        strcat(Result, Contoh);
+        Result[Len+LenContoh+2] = 0;
     }
     else
-        Sunda[strlen(Sunda) - 1] = '\n';
-
-    return Sunda;
+    {
+        Result[Len] = '\n';
+        Result[Len+1] = 0;
+    }
+    return Result;
 }
 
 Infotype KamusToString(AddressNodeNR Bahasa)
@@ -310,8 +322,10 @@ Infotype KamusToString(AddressNodeNR Bahasa)
                 ConvFromCharToChar(&(*Bahasa).Info, '.', '=');
             else
                 ConvFromCharToChar(&(*Bahasa).Info, '.', ',');
-            Result = (Infotype) realloc(Result, (Len + strlen(Bahasa->Info)) * sizeof(char));
+            Result = (Infotype)realloc(Result, (Len + strlen(Bahasa->Info) + 1) * sizeof(char));
             strcat(Result, Bahasa->Info);
+            Len = Len + strlen(Result);
+            Result[Len] = 0;
             Bahasa = Bahasa->Next;
         }
         return Result;
@@ -330,14 +344,19 @@ void ConvFromCharToChar(Infotype *Vocab, char CharFrom, char CharThis)
 
 void RefactorContoh(Infotype *Contoh)
 {
-    Infotype Buka = "(";
-    Infotype Tutup = ");";
-    Infotype Temp = (Infotype)malloc((strlen(*Contoh) + 3) * sizeof(char));
+    Infotype Buka = AlokString(2);
+    Infotype Tutup = AlokString(3);
+    Buka[0] = '(';
+    Buka[1] = 0;
+    Tutup[0] = ')';
+    Tutup[1] = ';';
+    Tutup[2] = 0;
+    Infotype Temp = (Infotype)malloc((strlen(*Contoh) + 4) * sizeof(char));
     strcpy(Temp, Buka);
     strcat(Temp, (*Contoh));
     strcat(Temp, Tutup);
-
-    free(*Contoh);
+    Temp[strlen((*Contoh))+3] = 0;
+    // free((Contoh)); // bug
     *Contoh = Temp;
 }
 
@@ -393,12 +412,20 @@ void PrintTree(Address Root)
 Address AlokTree()
 {
     Address NewTree = (Address)malloc(sizeof(Binary));
-    NewTree->Height = 1;
-    NewTree->Left = NULL;
-    NewTree->Right = NULL;
-    NewTree->Kamus.Sunda = NULL;
-    NewTree->Kamus.Indonesia = NULL;
-    NewTree->Kamus.Contoh = NULL;
+    if (NewTree != NULL)
+    {
+        NewTree->Height = 1;
+        NewTree->Left = NULL;
+        NewTree->Right = NULL;
+        NewTree->Kamus.Sunda = NULL;
+        NewTree->Kamus.Indonesia = NULL;
+        NewTree->Kamus.Contoh = NULL;
+    }
+    else
+    {
+        ErrorMsg("Mungkin memori sudah penuh...");
+        Stun();
+    }
     return NewTree;
 }
 
