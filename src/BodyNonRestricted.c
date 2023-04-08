@@ -8,18 +8,19 @@ AddressNodeNR InitNR()
     return NULL;
 }
 
-Infotype CreateString(int Len)
+Infotype AlokString(int Len)
 {
-    Infotype String = (Infotype) malloc((Len) * sizeof(char));
-    return String;
+    // Infotype String = (Infotype)malloc((Len) * sizeof(char));
+    // return String;
+    return (Infotype)malloc((Len) * sizeof(char));
 }
 
 AddressNodeNR CreateNodeNR(Infotype Info)
 {
-    AddressNodeNR NewNode = (AddressNodeNR) malloc(sizeof(AddressNodeNR));
-    if(NewNode != NULL)
+    AddressNodeNR NewNode = (AddressNodeNR)malloc(sizeof(AddressNodeNR));
+    if (NewNode != NULL)
     {
-        NewNode->Info = CreateString(strlen(Info));
+        NewNode->Info = AlokString(strlen(Info));
         NewNode->Info = Info;
         NewNode->Next = NULL;
     }
@@ -38,9 +39,9 @@ int NRIsEmpty(AddressNodeNR NR)
 void InsertNR(AddressNodeNR *NR, Infotype Info)
 {
     AddressNodeNR NewNode = CreateNodeNR(Info);
-    if(NewNode != NULL)
+    if (NewNode != NULL)
     {
-        if(*NR != NULL)
+        if (*NR != NULL)
         {
             NewNode->Next = *NR;
             *NR = NewNode;
@@ -55,7 +56,7 @@ void InsertNR(AddressNodeNR *NR, Infotype Info)
 void DeleteNR(AddressNodeNR *NR, Infotype Target)
 {
     AddressNodeNR Prev = NULL, Del = *NR;
-    if(NRIsEmpty(*NR))
+    if (NRIsEmpty(*NR))
     {
         printf("Data sudah kosong...\n");
     }
@@ -67,11 +68,11 @@ void DeleteNR(AddressNodeNR *NR, Infotype Target)
             Del = Del->Next;
         }
 
-        if(Del != NULL)
+        if (Del != NULL)
         {
             printf("Data tidak ditemukan...\n");
         }
-        else if(Prev == NULL)
+        else if (Prev == NULL)
         {
             (*NR) = Del->Next;
             free(Del->Info);
@@ -91,8 +92,8 @@ void PrintNB(AddressNodeNR NB)
     int Count = 1;
     while (NB != NULL)
     {
-        printf("%d. %s\n",Count, NB->Info);
+        printf("%d. %s\n", Count, NB->Info);
         Count++;
         NB = NB->Next;
-    }   
+    }
 }
