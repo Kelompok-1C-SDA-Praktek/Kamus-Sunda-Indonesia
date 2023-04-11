@@ -456,3 +456,63 @@ void InsertToTree(Address *Tree, Kamus Kamus)
     else
         InsertToTree(&(*Tree)->Right, Kamus);
 }
+
+void EditKata(Address *P, Infotype Input, bool Bahasa){
+    Kamus KMS,Terjemahan;
+    FILE *FileTree,*FileTemp;
+    
+    //cek kata inputan ada di dalam tree atau tidak
+    if(*P == NULL){
+        if(Bahasa){ //true or false, buat sunda
+            printf("Kecap teu aya! Mangga lebetkeun kecap");
+        }
+        else{ //true or false, buat indonesia
+            printf("Kata tidak ada! Silahkan input kata");
+		}
+		getch();
+    }
+    else{
+        //membaca filetree
+        if ((FileTree = fopen("Kamus-Sunda-Indonesia.dat", "r")) == NULL) {
+			printf("File tidak bisa dibuka/file tidak ada");				
+			exit(1); //langsung berhenti
+		} 
+        if((FileTemp = fopen("Kamus-Sunda-Indonesia-Temp.dat","w")) == NULL){
+            printf("File tidak bisa dibuka/file tidak ada");				
+			exit(1); //langsung berhenti
+        }
+        //ngebaca satu record KMS(sunda,indo,contoh) nnti dicompare apakah sama atau ngga sm inputannya 
+        while(fread(&KMS,sizeof(KMS),1,FileTree)){
+            //kalo sama, data akan disalin ke fileTemp terus kalo ada data yg 
+            //sm kyk inputan gabakal disalin karena itu yg bakal diedit
+            if(strcmp(Input,KMS.Sunda) =! 0){
+                fwrite(&KMS, sizeof(KMS), 1, FileTemp);
+            }
+
+        }
+        fclose(FileTree);
+        fclose(FileTemp);
+
+        //mengedit katanya
+        FileTree = fopen("Kamus-Sunda-Indonesia.dat","a+");
+        FileTemp = fopen("Kamus-Sunda-Indonesia-Temp.dat","r");
+
+        //jika yg akan diedit bahasa indonesia
+        if(Bahasa){
+            //bst
+        }
+    }
+}
+
+Address Search(Address *P, int Key){
+     // Base Cases: root is null or key is present at root
+    if (P == NULL){
+       return NULL;
+    }
+    // Key is greater than root's key
+    if (Root->Key < Key){
+       return search(Root->Right, Key);
+    }
+    // Key is smaller than root's key
+    return search(Root->Left, Key);
+}
