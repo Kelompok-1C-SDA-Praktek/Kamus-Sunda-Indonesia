@@ -1,25 +1,25 @@
 #ifndef NONRESTRICTED_H
 #define NONRESTRICTED_H
 
-typedef char *Infotype;
+typedef char *String;
 typedef struct nodeNR *AddressNodeNR;
 typedef struct nodeNR
 {
-    Infotype Info;
+    String Info;
     AddressNodeNR Next;
 } NodeNR;
 
 AddressNodeNR InitNR();
 
-Infotype AlokString(int Len);
+String AlokString(int Len);
 
-AddressNodeNR CreateNodeNR(Infotype Info);
+AddressNodeNR CreateNodeNR(String Info);
 
 int NRIsEmpty(AddressNodeNR NR);
 
-void InsertNR(AddressNodeNR *NR, Infotype Info);
+void InsertNR(AddressNodeNR *NR, String Info);
 
-void DeleteNR(AddressNodeNR *NR, Infotype Target);
+void DeleteNR(AddressNodeNR *NR, String Target);
 
 void PrintNB(AddressNodeNR NB);
 
