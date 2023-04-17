@@ -183,7 +183,6 @@ void Execute(int Choice, Address *Tree, bool *Exit)
 
     case 3:
         // Mencari string
-        SearchVocab((*Tree));
         break;
     case 0:
         // Tambahkan kosakata baru kedalam kamus
