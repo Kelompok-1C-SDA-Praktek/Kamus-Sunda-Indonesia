@@ -183,6 +183,10 @@ void PrintTree(Address Root);
 */
 void PrintKamus(Kamus Kamus);
 
+void LoadDataKamus(Address *Tree);
+
+void HeaderKamus();
+
 /* ==================================================== */
 /* ==================================================== */
 
