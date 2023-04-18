@@ -191,5 +191,9 @@ void HeaderKamus();
 /* ==================================================== */
 
 /* =============== End Of Coding Area Roy ============= */
+void SearchVocab(Address Tree);
+Address SearchAddrs(Address Tree, String VocabSunda);
+
+
 
 #endif // !BTREEKAMUS_H

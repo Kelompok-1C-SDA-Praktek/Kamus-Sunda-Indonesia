@@ -485,6 +485,7 @@ void SearchVocab(Address Tree)
     char BufferInput[MAX_BUFFER];
     printf("Masukan kosakata yang akan dicari : ");
     scanf(" %[^\n]", BufferInput);
+    BufferInput[0] = toupper(BufferInput[0]);
     Address TempTree = SearchAddrs(Tree, BufferInput);
     if(TempTree != NULL)
     {
