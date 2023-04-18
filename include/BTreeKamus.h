@@ -112,8 +112,8 @@ void InsertKata(Address *Tree);
 
 /* Untuk melakukan input perulangan pada saat memasukan sebuah kosakata baru ke dalam satu
     variabel misal variabel : Sunda / Indonesia / Contoh dalam tipe data String atau Pointer Of Char
-    I.S: Variabel belum terisi kosakata apapun
-    F.S: Variabel sudah terisi kosakata yang diinputkan pengguna
+    I.S: Variabel kamus belum terisi kosakata apapun
+    F.S: Variabel kamus sudah terisi kosakata yang diinputkan pengguna
 */
 void InputKamus(String *NewVocab);
 
@@ -130,9 +130,9 @@ void Input(String *NewVocab);
 */
 void InsertToFile(String NewVocab);
 
-/* Untuk menggabungkan semua yang ada di variabel kamus dan mengembalikannya dalam bentuk string
-    I.S: Kosakata yang ada di Kamus masih terpisah
-    F.S: Kosakata yang ada di Kamus sudah menyatu dan menjadi contoh format "Abi,Urang,Aing.=Saya,Aku,Gueh.(Abi ganteng pisan.)"
+/* Untuk menuliskan String yang ada di parameter NewVocab ke dalam file di End Of File
+    I.S: String di parameter NewVocab belum tertulis di dalam file
+    F.S: String di parameter NewVocab belum tertulis di dalam file pada End Of File
 */
 String MergeKamus(Kamus NewKamus);
 
