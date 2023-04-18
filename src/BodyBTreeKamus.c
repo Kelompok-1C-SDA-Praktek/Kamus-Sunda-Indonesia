@@ -478,3 +478,31 @@ void LoadDataKamus(Address *Tree)
     }
     Stun();
 }
+
+void SearchVocab(Address Tree)
+{
+    char BufferInput[MAX_BUFFER];
+    printf("Masukan kosakata yang akan dicari : ");
+    scanf(" %[^\n]", BufferInput);
+    Address TempTree = SearchAddrs(Tree, BufferInput);
+    if(TempTree != NULL)
+    {
+        HeaderKamus();
+        PrintKamus(TempTree->Kamus);
+    }
+    else
+    {
+        ErrorMsg("Kosakata tidak ditemukan...");
+    }
+    Stun();
+}
+
+Address SearchAddrs(Address Tree, String VocabSunda)
+{
+    if(Tree == NULL || strcmp(Tree->Kamus.Sunda, VocabSunda) == 0)
+        return Tree;
+    else if (strcmp(VocabSunda, Tree->Kamus.Sunda) < 0) // Jika Kamus sunda yang baru lebih kecil dari kamus yang lama
+        return SearchAddrs(Tree->Left, VocabSunda);
+    else
+        return SearchAddrs(Tree->Right, VocabSunda);
+}
