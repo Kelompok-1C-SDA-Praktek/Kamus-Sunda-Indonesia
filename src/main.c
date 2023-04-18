@@ -6,7 +6,7 @@ int main()
     /* Deklarasi variabel */
     Address KamusTree = NULL;
     bool Exit = false;
-
+    
     /* Program utama */
     // Pengaturan ukuran console dengan lebar 1000 dan tinggi 600 
     HWND hWnd = GetConsoleWindowNT();
