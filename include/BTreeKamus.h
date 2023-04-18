@@ -191,5 +191,8 @@ void HeaderKamus();
 /* ==================================================== */
 
 /* =============== End Of Coding Area Roy ============= */
-
+/*================Naila================================ */
+Address SearchTree(Address Root, String Input);
+void SearchKata(Address Tree);
+/*================Naila================================ */
 #endif // !BTREEKAMUS_H

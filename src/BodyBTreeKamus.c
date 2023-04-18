@@ -183,6 +183,8 @@ void Execute(int Choice, Address *Tree, bool *Exit)
 
     case 3:
         // Mencari string
+        system("cls");
+        SearchKata((*Tree));
         break;
     case 0:
         // Tambahkan kosakata baru kedalam kamus
@@ -479,30 +481,41 @@ void LoadDataKamus(Address *Tree)
     Stun();
 }
 
-void SearchVocab(Address Tree)
+/*=======================Naila=====================*/
+
+Address SearchTree(Address Root, String Input)
 {
-    char BufferInput[MAX_BUFFER];
-    printf("Masukan kosakata yang akan dicari : ");
-    scanf(" %[^\n]", BufferInput);
-    Address TempTree = SearchAddrs(Tree, BufferInput);
+    if (Root == NULL || strcmp(Root->Kamus.Sunda, Input) == 0)
+    
+        return Root;
+    
+    else if (strcmp(Input,Root->Kamus.Sunda) < 0)
+    
+        return SearchTree(Root->Left,Input);
+
+    else 
+        return SearchTree(Root->Right,Input);
+    
+}
+
+void SearchKata(Address Tree)
+{
+    char InputUser[MAX_BUFFER];
+    printf("Masukan kosakata yang akan dicari dalam bahasa sunda : ");
+    scanf(" %[^\n]", InputUser);
+    InputUser[0] = toupper(InputUser[0]);
+    Address TempTree = SearchTree(Tree, InputUser);
+    
     if(TempTree != NULL)
     {
         HeaderKamus();
-        PrintKamus(TempTree->Kamus);
+        PrintKamus(TempTree->Kamus); //kalo ditemukan dalam tree
     }
     else
     {
-        ErrorMsg("Kosakata tidak ditemukan...");
+        printf("Kata Tidak DItemukan!");  //kalo tidak ditemukan
     }
     Stun();
 }
 
-Address SearchAddrs(Address Tree, String VocabSunda)
-{
-    if(Tree == NULL || strcmp(Tree->Kamus.Sunda, VocabSunda) == 0)
-        return Tree;
-    else if (strcmp(VocabSunda, Tree->Kamus.Sunda) < 0) // Jika Kamus sunda yang baru lebih kecil dari kamus yang lama
-        return SearchAddrs(Tree->Left, VocabSunda);
-    else
-        return SearchAddrs(Tree->Right, VocabSunda);
-}
+/*=================================================*/
