@@ -183,40 +183,67 @@ void InsertKata(Address *Tree)
 {
     // Input Kosa Kata Baru
     Kamus NewKamus;
+    AddressNodeNR KamusSunda = NULL;
+    bool ValidToContinou = true;
 
     system("cls");
     printf("Saat ini anda akan menambahkan kosakata bahasa Sunda\n");
     InputKamus(&NewKamus.Sunda);
 
-    system("cls");
-    printf("Saat ini anda akan menambahkan kosakata bahasa Indonesia\n");
-    InputKamus(&NewKamus.Indonesia);
-
-    system("cls");
-    printf("Ingin menambahkan contohnya?\n");
-    if (Validasi())
+    // Lakukan pengecekan pada setiap kosakata yang ada di dalam kamus sunda
+    KamusSundaToList(&KamusSunda, NewKamus);
+    while (KamusSunda != NULL)
     {
-        system("cls");
-        printf("Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n");
-        InputKamus(&NewKamus.Contoh);
+        Address TempSunda = SearchTree((*Tree), KamusSunda->Info);
+        if (TempSunda != NULL) // Ada yang sama
+        {
+            // Tidak bisa dilanjutkan karena sudah ada
+            // Kalo mau edit aja kosakata yang lalu
+            ErrorMsg("Peringatan!\n");
+            printf("Kosakata ");
+            ErrorMsg(KamusSunda->Info);
+            printf(" sudah ada, silahkan lakukan pengeditan menggunakan fitur edit kata jika ingin menambahkan sesuatu pada kosakata tersebut\n");
+            Pause();
+            free(NewKamus.Sunda);
+            ValidToContinou = false;
+            break;
+        }
+        KamusSunda = KamusSunda->Next;
     }
-    else
-        NewKamus.Contoh = NULL;
 
-    // Insert To File
-    InsertToTree(&(*Tree), NewKamus);
-    InsertToFile(MergeKamus(NewKamus));
+    if (ValidToContinou)
+    {
+
+        system("cls");
+        printf("Saat ini anda akan menambahkan kosakata bahasa Indonesia\n");
+        InputKamus(&NewKamus.Indonesia);
+
+        system("cls");
+        printf("Ingin menambahkan contohnya?\n");
+        if (Validasi())
+        {
+            system("cls");
+            printf("Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n");
+            InputKamus(&NewKamus.Contoh);
+        }
+        else
+            NewKamus.Contoh = NULL;
+
+        // Insert To File
+        InsertToTree(&(*Tree), NewKamus);
+        InsertToFile(MergeKamus(NewKamus));
+    }
 }
 
 void InputKamus(String *NewVocab)
 {
     *NewVocab = AlokString(1);
     (*NewVocab)[0] = 0;
-
     while (true)
     {
         Input(&(*NewVocab));
         system("cls");
+        printf("%s\n", *NewVocab);
         if ((*NewVocab) != NULL)
         {
 
@@ -316,24 +343,7 @@ void InsertToTree(Address *Tree, Kamus NewKamus)
 {
     // Pisahkan kosakata bahasa sunda ke dalam Linked List
     AddressNodeNR ListVocabSunda = NULL;
-
-    unsigned int i = 0;
-    unsigned int j = 0;
-    while (j != strlen(NewKamus.Sunda))
-    {
-        String Temp = AlokString(strlen(NewKamus.Sunda));
-        Temp[strlen(NewKamus.Sunda)] = 0;
-        while (NewKamus.Sunda[j] != '.' && NewKamus.Sunda[j] != ',')
-        {
-            Temp[i] = NewKamus.Sunda[j];
-            i++;
-            j++;
-        }
-        Temp[i] = 0;
-        i = 0;
-        j++;
-        InsertNR(&ListVocabSunda, Temp);
-    }
+    KamusSundaToList(&ListVocabSunda, NewKamus);
     while (ListVocabSunda != NULL)
     {
         InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info);
@@ -499,15 +509,15 @@ int IsFileValid()
     {
         char Buffer[MAX_BUFFER];
         int Row = 0;
-        fseek(fp, 0,SEEK_END);
-        if(ftell(fp) == 0)
+        fseek(fp, 0, SEEK_END);
+        if (ftell(fp) == 0)
         {
             return -1;
         }
         rewind(fp);
         while (fscanf(fp, "%[^\n]\n", Buffer) == 1)
         {
-            Row++; 
+            Row++;
             if (CountChar(Buffer, '.') < 2 || CountChar(Buffer, '=') != 1 || CountChar(Buffer, '(') > 1 || CountChar(Buffer, ')') > 1)
                 return Row;
         }
@@ -523,10 +533,31 @@ int CountChar(String StrCheck, char CharCheck)
     int Count = 0;
     for (size_t i = 0; i < Len; i++)
     {
-        if(StrCheck[i] == CharCheck)
+        if (StrCheck[i] == CharCheck)
             Count++;
     }
-    return Count;    
+    return Count;
+}
+
+void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus)
+{
+    unsigned int LenOfTemp = 0;
+    unsigned int LenOfSunda = 0;
+    while (LenOfSunda != strlen(NewKamus.Sunda))
+    {
+        String Temp = AlokString(strlen(NewKamus.Sunda));
+        Temp[strlen(NewKamus.Sunda)] = 0;
+        while (NewKamus.Sunda[LenOfSunda] != '.' && NewKamus.Sunda[LenOfSunda] != ',')
+        {
+            Temp[LenOfTemp] = NewKamus.Sunda[LenOfSunda];
+            LenOfTemp++;
+            LenOfSunda++;
+        }
+        Temp[LenOfTemp] = 0;
+        LenOfTemp = 0;
+        LenOfSunda++;
+        InsertNR(&(*List), Temp);
+    }
 }
 
 /*=======================Naila=====================*/
@@ -553,8 +584,8 @@ void SearchKata(Address Tree)
     scanf(" %[^\n]", InputUser);
     InputUser[0] = toupper(InputUser[0]);
     TempTree = SearchTree(Tree, InputUser);
-    
-    if(TempTree != NULL)
+
+    if (TempTree != NULL)
     {
         HeaderKamus();
         PrintKamus(TempTree->Kamus); // kalo ditemukan dalam tree

@@ -190,6 +190,9 @@ void HeaderKamus();
 int IsFileValid();
 
 int CountChar(String StrCheck, char CharCheck);
+
+void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus);
+
 /* ==================================================== */
 /* ==================================================== */
 
