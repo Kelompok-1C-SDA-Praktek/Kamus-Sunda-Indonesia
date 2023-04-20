@@ -78,7 +78,7 @@ int Menu();
     I.S: belum ada teks apapun yang tampil ke layar
     F.S: teks tekan tombol apapun untuk melanjutkan...
 */
-void Stun();
+void Pause();
 
 /* Hanya untuk memvalidasi pilihan kepada pengguna yang hanya dapat menampung y atau n saja
     I.S: belum tampil ke layar pilihan y atau n
@@ -112,8 +112,8 @@ void InsertKata(Address *Tree);
 
 /* Untuk melakukan input perulangan pada saat memasukan sebuah kosakata baru ke dalam satu
     variabel misal variabel : Sunda / Indonesia / Contoh dalam tipe data String atau Pointer Of Char
-    I.S: Variabel belum terisi kosakata apapun
-    F.S: Variabel sudah terisi kosakata yang diinputkan pengguna
+    I.S: Variabel kamus belum terisi kosakata apapun
+    F.S: Variabel kamus sudah terisi kosakata yang diinputkan pengguna
 */
 void InputKamus(String *NewVocab);
 
@@ -130,9 +130,9 @@ void Input(String *NewVocab);
 */
 void InsertToFile(String NewVocab);
 
-/* Untuk menggabungkan semua yang ada di variabel kamus dan mengembalikannya dalam bentuk string
-    I.S: Kosakata yang ada di Kamus masih terpisah
-    F.S: Kosakata yang ada di Kamus sudah menyatu dan menjadi contoh format "Abi,Urang,Aing.=Saya,Aku,Gueh.(Abi ganteng pisan.)"
+/* Untuk menuliskan String yang ada di parameter NewVocab ke dalam file di End Of File
+    I.S: String di parameter NewVocab belum tertulis di dalam file
+    F.S: String di parameter NewVocab belum tertulis di dalam file pada End Of File
 */
 String MergeKamus(Kamus NewKamus);
 
@@ -187,13 +187,20 @@ void LoadDataKamus(Address *Tree);
 
 void HeaderKamus();
 
+int IsFileValid();
+
+int CountChar(String StrCheck, char CharCheck);
+
+void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus);
+
 /* ==================================================== */
 /* ==================================================== */
 
 /* =============== End Of Coding Area Roy ============= */
-void SearchVocab(Address Tree);
-Address SearchAddrs(Address Tree, String VocabSunda);
 
-
+/*================Naila================================ */
+Address SearchTree(Address Root, String Input);
+void SearchKata(Address Tree);
+/*================Naila================================ */
 
 #endif // !BTREEKAMUS_H
