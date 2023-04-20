@@ -191,7 +191,7 @@ void InsertKata(Address *Tree)
     InputKamus(&NewKamus.Sunda);
 
     // Lakukan pengecekan pada setiap kosakata yang ada di dalam kamus sunda
-    KamusSundaToList(&KamusSunda, NewKamus);
+    StringToList(&KamusSunda, NewKamus.Sunda);
     while (KamusSunda != NULL)
     {
         Address TempSunda = SearchTree((*Tree), KamusSunda->Info);
@@ -343,7 +343,7 @@ void InsertToTree(Address *Tree, Kamus NewKamus)
 {
     // Pisahkan kosakata bahasa sunda ke dalam Linked List
     AddressNodeNR ListVocabSunda = NULL;
-    KamusSundaToList(&ListVocabSunda, NewKamus);
+    StringToList(&ListVocabSunda, NewKamus.Sunda);
     while (ListVocabSunda != NULL)
     {
         InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info);
@@ -539,17 +539,17 @@ int CountChar(String StrCheck, char CharCheck)
     return Count;
 }
 
-void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus)
+void StringToList(AddressNodeNR *List, String Vocab)
 {
     unsigned int LenOfTemp = 0;
     unsigned int LenOfSunda = 0;
-    while (LenOfSunda != strlen(NewKamus.Sunda))
+    while (LenOfSunda != strlen(Vocab))
     {
-        String Temp = AlokString(strlen(NewKamus.Sunda));
-        Temp[strlen(NewKamus.Sunda)] = 0;
-        while (NewKamus.Sunda[LenOfSunda] != '.' && NewKamus.Sunda[LenOfSunda] != ',')
+        String Temp = AlokString(strlen(Vocab));
+        Temp[strlen(Vocab)] = 0;
+        while (Vocab[LenOfSunda] != '.' && Vocab[LenOfSunda] != ',')
         {
-            Temp[LenOfTemp] = NewKamus.Sunda[LenOfSunda];
+            Temp[LenOfTemp] = Vocab[LenOfSunda];
             LenOfTemp++;
             LenOfSunda++;
         }

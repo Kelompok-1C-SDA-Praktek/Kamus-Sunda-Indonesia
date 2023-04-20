@@ -31,11 +31,6 @@ typedef struct binary
 /* ================= Coding Area Roy ================== */
 
 /* Modul amogus-9 */
-HWND WINAPI GetConsoleWindowNT(void);
-/* Mengambil index dari kursor
-    I.S: -
-    F.S: -
-*/
 
 void Koor(int Baris, int Kolom);
 /* Mengatur tata letak kursor untuk output layar
@@ -209,7 +204,7 @@ int CountChar(String StrCheck, char CharCheck);
     F.S: Sudah mengembalikan nilai integer senilai dengan berapa jumlah karakter yang terkandung di String
 */
 
-void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus);
+void StringToList(AddressNodeNR *List, String Vocab);
 /* Memisahkan nilai string (kosakata) yang dipisahkan oleh . menjadi sebuah list
     I.S: Linked list belum berisikan kata yang di pisahkan menjadi bagian bagian
     F.S: Linked list sudah berisikan kata yang di pisahkan menjadi bagian bagian

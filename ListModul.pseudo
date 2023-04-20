@@ -1,0 +1,47 @@
+Yang dibuat oleh Roy (memecah bagian bagian modul yang besar menjadi lebih kecil)
+
+MODUL NonRestricted
+    1 . AddressNodeNR InitNR();
+    2 . String AlokString(int Len);
+    3 . AddressNodeNR CreateNodeNR(String Info);
+    4 . int NRIsEmpty(AddressNodeNR NR);
+    5 . void InsertNR(AddressNodeNR *NR, String Info);
+    6 . void DeleteNR(AddressNodeNR *NR, String Target);
+    7 . void PrintNB(AddressNodeNR NB);
+end
+
+MODUL BTreeKamus
+    1 . void Koor(int Baris, int Kolom); // Mengambil dari tubes ddp kelompok roy
+    2 . void SetColor(int kode1, int kode2);
+    3 . void DefaultColor();
+    4 . void ErrorMsg(String ErrorMessage);
+    5 . void SuccMsg(String SuccesMessage);
+    6 . int Menu();
+    7 . void Pause();
+    8 . bool Validasi();
+    9 . void ExitApps();
+    10 . void Execute(int Choice, Address *Tree, bool *Exit);
+    11 . void InsertKata(Address *Tree);
+    12 . void InputKamus(String *NewVocab);
+    13 . void Input(String *NewVocab);
+    14 . void InsertToFile(String NewVocab);
+    15 . String MergeKamus(Kamus NewKamus);
+    16 . void ConvFromCharToChar(String *Vocab, char CharFrom, char CharThis);
+    17 . void InsertToTree(Address *Tree, Kamus NewKamus);
+    18 . Address AlokTree();
+    19 . Address CreateKamus(Kamus NewKamus, String VocabSunda);
+    20 . void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda);c
+    21 . void PrintTree(Address Root);
+    22 . void PrintKamus(Kamus Kamus);
+    23 . void LoadDataKamus(Address *Tree);
+    24 . void HeaderKamus();
+    25 . int IsFileValid();
+    26 . int CountChar(String StrCheck, char CharCheck);
+    27 . void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus);
+end
+
+Total Modul Roy:
+34 modul
+------------
+23 procedure
+11 function
