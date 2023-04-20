@@ -78,7 +78,7 @@ int Menu();
     I.S: belum ada teks apapun yang tampil ke layar
     F.S: teks tekan tombol apapun untuk melanjutkan...
 */
-void Stun();
+void Pause();
 
 /* Hanya untuk memvalidasi pilihan kepada pengguna yang hanya dapat menampung y atau n saja
     I.S: belum tampil ke layar pilihan y atau n
@@ -186,6 +186,12 @@ void PrintKamus(Kamus Kamus);
 void LoadDataKamus(Address *Tree);
 
 void HeaderKamus();
+
+int IsFileValid();
+
+int CountChar(String StrCheck, char CharCheck);
+
+void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus);
 
 /* ==================================================== */
 /* ==================================================== */
