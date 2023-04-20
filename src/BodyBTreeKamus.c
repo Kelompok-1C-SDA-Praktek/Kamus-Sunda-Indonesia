@@ -548,12 +548,13 @@ Address SearchTree(Address Root, String Input)
 void SearchKata(Address Tree)
 {
     char InputUser[MAX_BUFFER];
+    Address TempTree;
     printf("Masukan kosakata yang akan dicari dalam bahasa sunda : ");
     scanf(" %[^\n]", InputUser);
     InputUser[0] = toupper(InputUser[0]);
-    Address TempTree = SearchTree(Tree, InputUser);
-
-    if (TempTree != NULL)
+    TempTree = SearchTree(Tree, InputUser);
+    
+    if(TempTree != NULL)
     {
         HeaderKamus();
         PrintKamus(TempTree->Kamus); // kalo ditemukan dalam tree
