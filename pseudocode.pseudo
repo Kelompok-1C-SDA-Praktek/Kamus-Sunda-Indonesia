@@ -1,0 +1,225 @@
+DEFINE MAX_BUFFER 4092
+DECLARE FileKamus : ARRAY[1,26] OF CHAR
+FileKamus <- "Kamus-Sunda-Indonesia.dat"
+
+// Deklarasi Struktur Data Binary
+DECLARE Address : Pointer OF Binary
+DECLARE String : Pointer OF CHAR
+
+TYPE Kamus
+	DECLARE Indonesia, Sunda, Contoh : String
+ENDTYPE
+
+TYPE Binary
+	DECLARE Height : INTEGER
+	DECLARE Right, Left : Address
+	DECLARE Kamus : Kamus
+ENDTYPE
+
+// Deklarasi Struktur Data Linked List
+DECLARE AddressNodeNR : Pointer OF NodeNR
+
+TYPE
+	DECLARE Info : String
+	DECLARE Next : AddressNodeNR
+ENDTYPE
+
+// Procedure InserKata
+
+// Tree : Input Output
+PROCEDURE InsertKata(Tree : Address)
+	// Deklarasi variabel
+	DECLARE NewKamus : Kamus
+	// Clear Screen
+	OUTPUT "Saat ini anda akan menambahkan kosakata bahasa Sunda\n"
+	CALL InputKamus(Kamus.Sunda)
+END PROCEDURE
+
+
+// Procedure InputKamus
+// NewVocab : Input Output
+PROCEDURE InputKamus(NewVocab : String)
+	NewVocab <- AlokString(1)
+	NewVocab[1] <- 0
+
+	WHILE(TRUE) DO
+		CALL Input(&NewVocab)
+		// Clear Screen
+		IF(NewVocab != NULL) THEN
+			OUTPUT "\nTambahkan kosakata lain yang mirip?\n"
+			IF(!CALL Validasi()) THEN
+				break
+			END IF
+		END IF
+	ENDWHILE
+END PROCEDURE
+
+// Procedure Input
+// NewVocab : Input Output
+PROCEDURE Input(NewVocab : String)
+	CHAR Buffer[MAX_BUFFER]
+	UNSIGNED INT LenOfVocab = 0
+	OUTPUT "Masukan kata: "
+	INPUT Buffer
+	LenOfVocab <- strlen(Buffer)
+	IF(LenOfVocab != 0) THEN
+		DECLARE Temp : String
+		Temp <- AlokString(LenOfVocab + 3)
+		strcpy(Temp, Buffer)
+		strcat(Temp, ".")
+		Temp[LenOfVocab + 2] <- 0
+		UNSIGNED INT LenOfNewVocab <- strlen(NewVocab)
+		(NewVocab) <- realloc((NewVocab), (LenOfNewVocab + LenOfVocab + 2)  sizeof(char))
+        strcat((NewVocab), Temp)
+        (NewVocab)[LenOfVocab + LenOfNewVocab + 1] <- 0;
+	END IF
+	fflush(stdin) // menghapus buffer
+END PROCEDURE
+
+// Procedure InsertToFile
+// NewVocab : Input
+PROCEDURE InsertToFile(NewVocab : String)
+	OPENFILE FileKamus FOR WRITE
+		IF(OPENFILE = NULL) THEN
+			OUTPUT "Gagal membuka file Kamus-Sunda-Indonesia.dat"
+			CLOSEFILE FileKamus
+		ELSE
+			WRITEFILE FileKamus, NewVocab
+			CLOSEFILE FileKamus 
+			OUTPUT "Berhasil menuliskan kosakata baru ke dalam file Kamus-Sunda-Indonesia.dat"
+		END IF
+END PROCEDURE
+
+// Function MergeKamus
+// NewKamus : Input
+FUNCTION MergeKamus(NewKamus : Kamus) RETURN String
+	DECLARE Result : String
+	Result <- AlokString(strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 6)
+	Result[strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5] <- 0
+	
+	CALL ConvFromCharToChar(&NewKamus.Sunda, '.', ',')
+    CALL ConvFromCharToChar(&NewKamus.Indonesia, '.', ',')
+    CALL ConvFromCharToChar(&NewKamus.Contoh, '.', ',')
+	
+    strcpy(Result, NewKamus.Sunda)
+    strcat(Result, "=")
+    strcat(Result, NewKamus.Indonesia)
+    strcat(Result, "(")
+    strcat(Result, NewKamus.Contoh)
+    strcat(Result, ")")
+    strcat(Result, "\n")
+    RETURN Result
+END FUNCTION
+
+// Procedure ConvFromCharToChar
+// Vocab : Input Output
+// CharFrom, CharThis : Input
+
+PROCEDURE ConvFromCharToChar(Vocab : String, CharFrom, CharThis : CHAR)
+	UNSIGNED INT LenOfVocab <- strlen(Vocab)
+	FOR (UNSIGNED INT i <- 1 TO LenOfVocab STEP 1)
+		IF(Vocab[i] = CharFrom AND i != LenOfVocab) THEN
+			Vocab[i] <- CharThis
+		END IF
+	ENDFOR
+END PROCEDURE
+
+
+// Procedure InsertToTree
+// Tree : Input Output
+// NewKamus : Input
+PROCEDURE InsertToTree(Tree : Address, NewKamus : Kamus)
+	DECLARE ListVocabSunda : AddressNodeNR
+	DECLARE Temp : String
+	DECLARE i,j : UNSIGNED INT
+	ListVocabSunda <- NULL
+	Temp <- AlokString(strlen(NewKamus.Sunda))
+	Temp[strlen(NewKamus.Sunda) + 1] = 0
+	i <- 1
+	j <- 1
+	WHILE(j != strlen(NewKamus.Sunda)) DO
+		WHILE(NewKamus.Sunda[j] != '.') DO
+			Temp[i] <- NewKamus.Sunda[j]
+			i++
+			j++
+		ENDWHILE
+		Temp[i] <- 0
+		i <- 1
+		j++
+		CALL InsertNR(&ListVocabSunda, Temp)
+	ENDWHILE
+	WHILE(ListVocabSunda != NULL) DO
+		CALL InsertBinaryTree(&Tree, NewKamus, Temp)
+		ListVocabSunda <- ListVocabSunda^.Next
+	ENDWHILE
+END PROCEDURE
+
+// Function AlokTree
+FUNCTION AlokTree() RETURN Address
+	RETURN (Address) malloc(sizeof(Binary))
+END FUNCTION
+
+// Function CreateKamus
+// NewKamus, VocabSunda : Input
+FUNCTION CreateKamus(NewKamus : Kamus, VocabSunda : String) RETURN Address
+	DECLARE NewTree : Address
+	NewTree <- AlokTree()
+	IF(NewTree != NULL) THEN
+		NewTree^.Height <- 1
+        NewTree^.Left <- NULL
+        NewTree^.Right <- NULL
+        NewTree^.Kamus.Sunda <- VocabSunda
+        NewTree^.Kamus.Indonesia <- NewKamus.Indonesia
+        NewTree^.Kamus.Contoh <- NewKamus.Contoh
+	ELSE THEN
+		OUTPUT "Gagal memuat kosakata ke dalam aplikasi"
+        CALL Pause()
+	END IF
+END FUNCTION
+
+// Procedure InsertBinaryTree
+// Tree : Input Output
+// NewKamus, VocabSunda : Input
+PROCEDURE InsertBinaryTree(Tree : Address, NewKamus : Kamus, VocabSunda : String)
+	IF(Tree = NULL) THEN
+		Tree <- CreateKamus(NewKamus, VocabSunda)
+	ELSE IF(strcmp(NewKamus.Sunda, Tree^.Kamus.Sunda) < 0) THEN
+		CALL InsertBinaryTree(&Tree^.Left, NewKamus, VocabSunda)
+	END IF
+	ELSE THEN
+		CALL InsertBinaryTree(&Tree^.Right, NewKamus, VocabSunda)
+	END IF
+END PROCEDURE
+
+// Procedure PrintTree
+// Root : Input
+PROCEDURE PrintTree(Root : Address)
+    IF(Root != NULL) THEN
+        CALL PrintTree(Root^.Left)
+        CALL PrintKamus(Root^.Kamus)
+        CALL PrintTree(Root^.Right)
+    END IF
+END PROCEDURE
+
+
+// Procedure PrintKamus
+// Kamus : Input
+PROCEDURE PrintKamus(Kamus : Kamus)
+    IF(Kamus.Sunda != NULL) THEN
+        OUTPUT "\t" + Kamus.Sunda
+    END IF
+    
+    OUTPUT " = \t"
+    
+    IF(Kamus.Indonesia != NULL) THEN
+        OUTPUT Kamus.Indonesia
+    END IF
+    
+    IF(Kamus.Contoh != NULL) THEN
+        OUTPUT "\tContoh: " + Kamus.Indonesia + "\n"
+    ELSE
+        OUTPUT "\tTidak ada contoh tersedia\n"
+    END IF
+
+END PROCEDURE
+
