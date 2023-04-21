@@ -1,5 +1,4 @@
 #include "BTreeKamus.h"
-// #include "NonRestricted.h"
 
 int main()
 {
@@ -8,7 +7,7 @@ int main()
     bool Exit = false;
     
     /* Program utama */
-    // Pengaturan ukuran console dengan lebar 1000 dan tinggi 600 
+    // Memuat data
     LoadDataKamus(&KamusTree);
 
     /* Run */

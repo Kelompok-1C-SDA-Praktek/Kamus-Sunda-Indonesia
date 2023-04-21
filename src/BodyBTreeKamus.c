@@ -69,7 +69,7 @@ void ErrorMsg(String ErrorMessage)
 void SuccMsg(String SuccesMessage)
 {
     SetColor(BG_GREEN, FG_BLACK);
-    printf("%s\n", SuccesMessage);
+    printf("%s", SuccesMessage);
     DefaultColor();
 }
 
@@ -84,21 +84,22 @@ int Menu()
     printf("1. Tampilkan isi kamus Sunda - Indonesia\n");
     printf("2. Tambah kosakata kamus\n");
     printf("3. Mencari kosakata bahasa Sunda\n");
+    printf("4. Edit kosakata\n");
+    printf("5. Hapus kosakata\n");
     printf("0. Keluar\n\n");
     printf("Masukan pilihan anda: ");
     scanf(" %[^\n]", ChoiceString);
 
     if (sscanf(ChoiceString, "%d", &Choice))
     {
-        if (Choice >= 0 && Choice <= 3)
+        if (Choice >= 0 && Choice <= 5)
             return Choice;
     }
 
     ErrorMsg("Pilihan anda tidak ada...");
     sleep(1.5);
     fflush(stdin);
-    Choice = Menu();
-    return Choice;
+    return Choice = Menu();
 }
 
 void Pause()
@@ -143,7 +144,7 @@ void ExitApps()
     for (int i = 1; i <= 3; i++)
     {
         printf(".");
-        sleep(0.5);
+        sleep(1);
     }
 }
 
@@ -175,6 +176,10 @@ void Execute(int Choice, Address *Tree, bool *Exit)
         printf("Apakah anda yakin untuk keluar?\n");
         if (Validasi())
             *Exit = true;
+        break;
+    
+    default:
+        ErrorMsg("Fitur belum ada\n");
         break;
     }
 }
@@ -304,7 +309,7 @@ void InsertToFile(String NewVocab)
         /* Abi,Urang.=Saya,Gueh.(Abi jajan ka Bandung,Urang gelut jeung maneh.) */
         fprintf(fp, "%s", NewVocab);
         fclose(fp);
-        SuccMsg("Berhasil menuliskan kosakata baru ke dalam file Kamus-Sunda-Indonesia.dat");
+        SuccMsg("Berhasil menuliskan kosakata baru ke dalam file Kamus-Sunda-Indonesia.dat\n");
     }
     Pause();
 }
@@ -475,7 +480,7 @@ void LoadDataKamus(Address *Tree)
                 InsertToTree(&(*Tree), TempKamus);
             }
             fclose(fp);
-            SuccMsg("Berhasil memuat data kamu pada file Kamus-Sunda-Indonesia.dat");
+            SuccMsg("Berhasil memuat data kamu pada file Kamus-Sunda-Indonesia.dat\n");
         }
         else if (Row == -1)
         {

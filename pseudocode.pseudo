@@ -24,12 +24,107 @@ TYPE
 	DECLARE Next : AddressNodeNR
 ENDTYPE
 
-// Procedure InserKata
 
+// Function Menu
+FUNCTION Menu() RETURN INTEGER
+	DECLARE Choice : INTEGER
+	// Clear Screen
+	OUTPUT "\nMenu\n"
+    OUTPUT "1. Tampilkan isi kamus Sunda - Indonesia\n"
+    OUTPUT "2. Tambah kosakata kamus\n"
+    OUTPUT "3. Mencari kosakata bahasa Sunda\n"
+    OUTPUT "4. Edit kosakata\n"
+    OUTPUT "5. Hapus kosakata\n"
+    OUTPUT "0. Keluar\n\n"
+    OUTPUT "Masukan pilihan anda: "
+	INPUT Choice
+
+	IF (Choice >= 0 AND Choice <= 5) THEN
+		RETURN Choice
+	END IF
+
+	OUTPUT "Pilihan anda tidak ada..."
+	RETURN Choice <- Menu()
+END FUNCTION
+
+
+// Procedure Pause
+PROCEDURE Pause()
+	OUTPUT "\nTekan tombol apapun untuk melanjutkan...\n"
+	getch()
+END PROCEDURE
+
+
+// Function Validasi
+FUNCTION Validasi() RETURN BOOLEAN
+	DECLARE Choice : CHAR
+	Choice <- ' '
+	OUTPUT "Tekan tombol [Y] jika iya..."
+	OUTPUT "Tekan tombol [N] jika tidak..."
+
+	WHILE ((Choice != 'Y') && (Choice != 'N')) DO
+		Choice <- toupper(getch())
+	END WHILE
+	RETURN Choice = 'Y'
+END FUNCTION
+
+
+// Procedure ExitApps
+PROCEDURE ExitApps()
+	OUTPUT "Terima kasih telah menggunakan aplikasi kami (^_^) \n"
+	OUTPUT "Keluar aplikasi"
+END PROCEDURE
+
+
+// Procedure InserKata
 // Tree : Input Output
 PROCEDURE InsertKata(Tree : Address)
 	// Deklarasi variabel
 	DECLARE NewKamus : Kamus
+	DECLARE AddressNodeNR : KamusSunda
+	DECLARE ValidToContinou : BOOLEAN
+
+	// Clear Screen
+	OUTPUT "Saat ini anda akan menambahkan kosakata bahasa Sunda\n"
+    CALL InputKamus(&NewKamus.Sunda)
+	CALL StringToList(&KamusSunda, NewKamus.Sunda)
+
+	WHILE (KamusSunda != NULL) DO
+        DECLARE TempSunda : Address
+		TempSunda <- SearchTree((*Tree), KamusSunda^.Info)
+        IF (TempSunda != NULL) THEN // Ada yang sama
+            // Tidak bisa dilanjutkan karena sudah ada
+            // Kalo mau edit aja kosakata yang lalu
+            OUTPUT "Peringatan!\n"
+            OUTPUT "Kosakata" + KamusSunda->Info + " sudah ada, silahkan lakukan pengeditan menggunakan fitur edit kata jika ingin menambahkan sesuatu pada kosakata tersebut\n"
+            Pause()
+            dealok(NewKamus.Sunda)
+            ValidToContinou <- false
+            break
+        END IF
+        KamusSunda <- KamusSunda^.Next
+    END WHILE
+
+	IF (ValidToContinou) THEN
+
+        // Clear Screen
+        OUTPUT "Saat ini anda akan menambahkan kosakata bahasa Indonesia\n")
+        CALL InputKamus(&NewKamus.Indonesia)
+
+        // Clear Screen
+        OUTPUT "Ingin menambahkan contohnya?\n")
+        IF (Validasi()) THEN
+            // Clear Screen
+            OUTPUT "Saat ini anda akan menambahkan contoh penggunaan bahasa sunda nya\n")
+            CALL InputKamus(&NewKamus.Contoh)
+        else
+            NewKamus.Contoh = NULL
+		END IF
+        // Insert To File
+        CALL InsertToTree(&Tree, NewKamus)
+        CALL InsertToFile(MergeKamus(NewKamus))
+    END IF
+
 	// Clear Screen
 	OUTPUT "Saat ini anda akan menambahkan kosakata bahasa Sunda\n"
 	CALL InputKamus(Kamus.Sunda)
@@ -71,9 +166,8 @@ PROCEDURE Input(NewVocab : String)
 		UNSIGNED INT LenOfNewVocab <- strlen(NewVocab)
 		(NewVocab) <- realloc((NewVocab), (LenOfNewVocab + LenOfVocab + 2)  sizeof(char))
         strcat((NewVocab), Temp)
-        (NewVocab)[LenOfVocab + LenOfNewVocab + 1] <- 0;
+        (NewVocab)[LenOfVocab + LenOfNewVocab + 1] <- 0
 	END IF
-	fflush(stdin) // menghapus buffer
 END PROCEDURE
 
 // Procedure InsertToFile
@@ -88,6 +182,7 @@ PROCEDURE InsertToFile(NewVocab : String)
 			CLOSEFILE FileKamus 
 			OUTPUT "Berhasil menuliskan kosakata baru ke dalam file Kamus-Sunda-Indonesia.dat"
 		END IF
+		CALL Pause()
 END PROCEDURE
 
 // Function MergeKamus
@@ -130,24 +225,7 @@ END PROCEDURE
 // NewKamus : Input
 PROCEDURE InsertToTree(Tree : Address, NewKamus : Kamus)
 	DECLARE ListVocabSunda : AddressNodeNR
-	DECLARE Temp : String
-	DECLARE i,j : UNSIGNED INT
-	ListVocabSunda <- NULL
-	Temp <- AlokString(strlen(NewKamus.Sunda))
-	Temp[strlen(NewKamus.Sunda) + 1] = 0
-	i <- 1
-	j <- 1
-	WHILE(j != strlen(NewKamus.Sunda)) DO
-		WHILE(NewKamus.Sunda[j] != '.') DO
-			Temp[i] <- NewKamus.Sunda[j]
-			i++
-			j++
-		ENDWHILE
-		Temp[i] <- 0
-		i <- 1
-		j++
-		CALL InsertNR(&ListVocabSunda, Temp)
-	ENDWHILE
+	CALL StringToList(&ListVocabSunda, NewKamus.Sunda)
 	WHILE(ListVocabSunda != NULL) DO
 		CALL InsertBinaryTree(&Tree, NewKamus, Temp)
 		ListVocabSunda <- ListVocabSunda^.Next
@@ -223,3 +301,139 @@ PROCEDURE PrintKamus(Kamus : Kamus)
 
 END PROCEDURE
 
+
+// Procedure HeaderKamus
+PROCEDURE HeaderKamus()
+	OUTPUT "Sunda \t\t"
+	OUTPUT "Indonesia \t"
+	OUTPUT "Contoh \n"
+END PROCEDURE
+
+// Functoin HasChar
+// Check, Contain : Input
+FUNCTION HasChar(Check : String, Contain : CHAR) RETURN BOOLEAN
+	DECLARE Len, i : INTEGER
+	Len <- strlen(Check)
+	FOR (i <- 1 TO LEN STEP 1)
+		IF(Check[i] == Contain) THEN
+			RETURN TRUE
+		END IF
+	END FOR
+	RETURN FALSE
+END FUNCTION
+
+
+// Procedure LoadDataKamus
+// Output : Tree
+PROCEDURE LoadDataKamus(Tree : Address)
+	OPENFILE FileKamus FOR READ
+	IF (OPENFILE = NULL) THEN
+		OUTPUT "Gagal memuat data pada file Kamus-Sunda-Indonesia.dat\n"
+		CLOSEFILE FileKamus
+	ELSE
+		DECLARE Buffer : ARRAY[1:MAX_BUFFER*3] OF CHAR 1 DIMENSION
+		DECLARE Row : INTEGER
+		Row <- IsFileValid()
+		IF (Row = 0) THEN
+			WHILE (fscanf(OPENFILE, "%[^\n]\n", Buffer) = 1) DO
+				DECLARE Sunda, Indonesia, Contoh : ARRAY[1:MAX_BUFFER] OF CHAR 1 DIMENSION
+
+				sscanf(Buffer, "%[^=]=%[^(](%[^)])", Sunda, Indonesia, Contoh)
+                TempKamus.Sunda <- AlokString(strlen(Sunda) + 1)
+                TempKamus.Indonesia <- AlokString(strlen(Indonesia) + 1)
+                TempKamus.Contoh <- NULL
+                strcpy(TempKamus.Sunda, Sunda)
+                TempKamus.Sunda[strlen(Sunda)] <- 0
+                strcpy(TempKamus.Indonesia, Indonesia)
+                TempKamus.Indonesia[strlen(Indonesia)] <- 0
+                IF (HasChar(Buffer, '('))) THEN
+                    TempKamus.Contoh <- AlokString(strlen(Contoh) + 1)
+                    TempKamus.Contoh[strlen(Contoh)] <- 0
+                    strcpy(TempKamus.Contoh, Contoh)
+                END IF
+                InsertToTree(&(*Tree), TempKamus)
+			END WHILE
+			CLOSEFILE FileKamus
+			OUTPUT "Berhasil memuat data kamu pada file Kamus-Sunda-Indonesia.dat\n"
+		
+		ELSE IF (Row = -1) THEN
+			OUTPUT "Tidak dapat memuat apapun, file masih kosong\n"
+			CLOSEFILE FileKamus
+		END IF
+		ELSE
+			sprintf(Buffer, "%d", Row)
+            OUTPUT "Ada kesalahan format teks pada file Kamus-Sunda-Indonesia.dat\n")
+            OUTPUT "Silahkan perbaiki format teks pada file tersebut pada Baris ke ")
+            OUTPUT Buffer
+            CLOSEFILE FileKamus
+		END IF
+	END IF
+	CALL Pause()
+END PROCEDURE
+
+// Function IsFileValid
+FUNCTION IsFileValid() RETURN INTEGER
+	OPENFILE FileKamus FOR READ
+	IF (OPENFILE = NULL) THEN
+		OUTPUT "Gagal melakukan proses pengecekan file Kamus-Sunda-Indonesia.dat"
+		CLOSEFILE FileKamus
+		CALL Pause()
+		RETURN FALSE
+	ELSE
+		DECLARE Buffer : ARRAY[1:MAX_BUFFER] OF CHAR 1 DIMENSION
+        DECLARE Row : INTEGER
+		Row <- 0
+        fseek(FileKamus, 0, SEEK_END)
+        IF (ftell(FileKamus) = 0) THEN
+            RETURN -1
+        END IF
+        rewind(FileKamus)
+        WHILE (fscanf(FileKamus, "%[^\n]\n", Buffer) = 1) DO
+            Row++
+            IF (CountChar(Buffer, '.') < 2 OR CountChar(Buffer, '=') != 1 OR CountChar(Buffer, '(') > 1 OR CountChar(Buffer, ')') > 1) THEN
+                RETURN Row
+			END IF
+        END WHILE
+        CLOSEFILE FileKamus
+        Row <- 0
+        RETURN Row
+	END IF
+END FUNCTION
+
+// Function CountChar
+// StrCheck, CharCheck : Input
+FUNCTION CountChar(StrCheck : String, CharCheck : CHAR) RETURN INTEGER
+	DECLARE Len,i : UNSIGNED INTEGER
+	DECLARE Count : INTEGER
+	Count <- 0
+	FOR (i <- 1 TO Len STEP 1) DO
+		IF(StrCheck[i] = CharCheck)THEN
+			Count++
+		END IF
+	END FOR
+END FUNCTION
+
+
+// Procedure StringToList
+// Output : List
+// Input : Vocab
+PROCEDURE StringToList(List : AddressNodeNR, Vocab : String)
+	DECLARE Temp : String
+	DECLARE i,j : UNSIGNED INT
+	ListVocabSunda <- NULL
+	Temp <- AlokString(strlen(NewKamus.Sunda))
+	Temp[strlen(NewKamus.Sunda) + 1] = 0
+	i <- 1
+	j <- 1
+	WHILE(j != strlen(NewKamus.Sunda)) DO
+		WHILE(NewKamus.Sunda[j] != '.') DO
+			Temp[i] <- NewKamus.Sunda[j]
+			i++
+			j++
+		ENDWHILE
+		Temp[i] <- 0
+		i <- 1
+		j++
+		CALL InsertNR(&ListVocabSunda, Temp)
+	ENDWHILE
+END PROCEDURE
