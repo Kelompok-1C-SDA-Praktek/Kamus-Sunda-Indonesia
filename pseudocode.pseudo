@@ -25,6 +25,40 @@ TYPE
 ENDTYPE
 
 
+// Procedure Koor
+// Baris, Kolom : Input
+PROCEDURE Koor(int Baris, int Kolom) // Mengambil dari tubes ddp kelompok roy
+	// Yang intinya adalah mengatur posisi kursor saat ini ke index Baris, Kolom
+END PROCEDURE
+
+// Procedure SetColor
+// kode1, kode2 : Input
+PROCEDURE SetColor(int kode1, int kode2)
+	// Yang intinya adalah mengatur agar teks yang tampil setelah perintah ini dijalankan
+	// Menjadi warna yang seseuai dengan kode warna yang di berikan di parameter
+END PROCEDURE
+	
+// Procedure DefaultColor
+PROCEDURE DefaultColor()
+	// Yang intinya adalah mengatur agar teks yang tampil setelah perintah ini dijalankan
+	// Menjadi warna background hitam dan foreground putih
+END PROCEDURE
+
+// Procedure ErrorMsg
+// ErrorMessage : Input
+PROCEDURE ErrorMsg(String ErrorMessage)
+	// Mengatur warna teksnya memiliki background marah dan warna teksnya putih
+	OUTPUT ErrorMessage
+END PROCEDURE
+
+// Procedure SuccMsg
+// SuccesMessage : Input
+PROCEDURE SuccMsg(String SuccesMessage)
+	// Mengatur warna teksnya memiliki background hijau dan warna teksnya hitam
+	OUTPUT SuccesMessage
+END PROCEDURE
+
+
 // Function Menu
 FUNCTION Menu() RETURN INTEGER
 	DECLARE Choice : INTEGER

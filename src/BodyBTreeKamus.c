@@ -316,20 +316,37 @@ void InsertToFile(String NewVocab)
 
 String MergeKamus(Kamus NewKamus)
 {
-    String Result = AlokString(strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5);
-    Result[strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5] = 0;
+    bool HaveContoh = false;
+    String Result;
+    if(NewKamus.Contoh != NULL)
+        HaveContoh = true;
+    
+    if(HaveContoh)
+    {
+        Result = AlokString(strlen(NewKamus.Sunda) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5);
+        Result[strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 4] = 0;
+        ConvFromCharToChar(&NewKamus.Contoh, '.', ',');
+    }
+    else
+    {
+        Result = AlokString(strlen(NewKamus.Sunda) + strlen(NewKamus.Indonesia) + 3);
+        Result[strlen(NewKamus.Sunda) + strlen(NewKamus.Indonesia) + 2] = 0;
+    }
 
     ConvFromCharToChar(&NewKamus.Sunda, '.', ',');
     ConvFromCharToChar(&NewKamus.Indonesia, '.', ',');
-    ConvFromCharToChar(&NewKamus.Contoh, '.', ',');
 
     /* 18 + 4 '=' "()" 0 "*/
     strcpy(Result, NewKamus.Sunda);
     strcat(Result, "=");
     strcat(Result, NewKamus.Indonesia);
-    strcat(Result, "(");
-    strcat(Result, NewKamus.Contoh);
-    strcat(Result, ")");
+
+    if(HaveContoh)
+    {
+        strcat(Result, "(");
+        strcat(Result, NewKamus.Contoh);
+        strcat(Result, ")");
+    }
     strcat(Result, "\n");
     return Result;
 }
@@ -351,7 +368,7 @@ void InsertToTree(Address *Tree, Kamus NewKamus)
     StringToList(&ListVocabSunda, NewKamus.Sunda);
     while (ListVocabSunda != NULL)
     {
-        InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info);
+        InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info, 1);
         ListVocabSunda = ListVocabSunda->Next;
     }
 }
@@ -361,12 +378,12 @@ Address AlokTree()
     return (Address)malloc(sizeof(Binary));
 }
 
-Address CreateKamus(Kamus NewKamus, String VocabSunda)
+Address CreateKamus(Kamus NewKamus, String VocabSunda, int Height)
 {
     Address NewTree = AlokTree();
     if (NewTree != NULL)
     {
-        NewTree->Height = 1;
+        NewTree->Height = Height;
         NewTree->Left = NULL;
         NewTree->Right = NULL;
         NewTree->Kamus.Sunda = VocabSunda;
@@ -381,19 +398,19 @@ Address CreateKamus(Kamus NewKamus, String VocabSunda)
     return NewTree;
 }
 
-void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda)
+void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda, int Height)
 {
     if ((*Tree) == NULL)
-        (*Tree) = CreateKamus(NewKamus, VocabSunda);
+        (*Tree) = CreateKamus(NewKamus, VocabSunda, Height);
     else if (strcmp(VocabSunda, (*Tree)->Kamus.Sunda) < 0) // Jika Kamus sunda yang baru lebih kecil dari kamus yang lama
-        InsertBinaryTree(&(*Tree)->Left, NewKamus, VocabSunda);
+        InsertBinaryTree(&(*Tree)->Left, NewKamus, VocabSunda, Height+1);
     else
-        InsertBinaryTree(&(*Tree)->Right, NewKamus, VocabSunda);
+        InsertBinaryTree(&(*Tree)->Right, NewKamus, VocabSunda, Height+1);
 }
 
 void PrintTree(Address Root)
 {
-    if (Root != NULL)
+    if (Root != NULL)   
     {
         PrintTree(Root->Left);
         PrintKamus(Root->Kamus);
@@ -603,3 +620,12 @@ void SearchKata(Address Tree)
 }
 
 /*=================================================*/
+
+
+/*==================== TEST =======================*/
+void Test()
+{
+    // int menu = Menu();
+    Pause();
+}
+/*==================== TEST =======================*/

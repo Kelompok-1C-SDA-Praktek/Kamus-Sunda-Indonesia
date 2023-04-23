@@ -34,7 +34,7 @@ typedef struct binary
 
 void Koor(int Baris, int Kolom);
 /* Mengatur tata letak kursor untuk output layar
-    I.S: diketahui index baris yang akan di setting
+    I.S:    
     F.S: kursor program akan menunjuk ke index yang sudah di tentukan di parameter
 */
 
@@ -62,7 +62,8 @@ void SuccMsg(String SuccesMessage);
     F.S: pesan yang dikirim di parameter sudah tampil dan berwarna hijau
 */
 
-/* Modul */
+
+/* Modul Kami*/
 int Menu();
 /* Untuk menampilkan menu dan memilihnya
     I.S: menu belum tampil ke layar
@@ -153,15 +154,16 @@ Address AlokTree();
     F.S: Sudah membuat alamat baru sebesar struktur data Binary dan mengembalikan alamat tersebut yang sudah di alokasikan
 */
 
-Address CreateKamus(Kamus NewKamus, String VocabSunda);
+Address CreateKamus(Kamus NewKamus, String VocabSunda, int Height);
 /* Mengalokasikan dan memasukan nilai nilai yang ada di parameter ke dalam alamat binary yang sudah di alokasikan di
     dalamnya
     I.S: Alamat binary belum di alokasikan dan belum terisi oleh nilai yang ada di parameter
     F.S: Alamat binary sudah di alokasikan dan belum terisi oleh nilai yang ada di parameter
 */
 
-void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda);
+void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda, int Height);
 /* Melakukan proses insert suatu alamat baru ke dalam struktur binary tree dengan menggunakan proses rekursif
+    dengan parameter awal Height bernilai 1
     I.S: Alamat binary tree yang baru belum masuk ke dalam sturktur data
     F.S: Alamat binary tree yang baru sudah masuk ke dalam sturktur data
 */
@@ -220,5 +222,7 @@ void StringToList(AddressNodeNR *List, String Vocab);
 Address SearchTree(Address Root, String Input);
 void SearchKata(Address Tree);
 /*================Naila================================ */
+
+void Test();
 
 #endif // !BTREEKAMUS_H
