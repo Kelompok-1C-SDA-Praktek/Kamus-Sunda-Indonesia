@@ -20,6 +20,7 @@ AddressNodeNR CreateNodeNR(String Info)
     {
         NewNode->Info = AlokString(strlen(Info));
         NewNode->Info = Info;
+        strcat(NewNode->Info, "\0");
         NewNode->Next = NULL;
     }
     else
@@ -66,7 +67,7 @@ void DeleteNR(AddressNodeNR *NR, String Target)
             Del = Del->Next;
         }
 
-        if (Del != NULL)
+        if (Del == NULL)
         {
             printf("Data tidak ditemukan...\n");
         }

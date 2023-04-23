@@ -69,7 +69,7 @@ void ErrorMsg(String ErrorMessage)
 void SuccMsg(String SuccesMessage)
 {
     SetColor(BG_GREEN, FG_BLACK);
-    printf("%s\n", SuccesMessage);
+    printf("%s", SuccesMessage);
     DefaultColor();
 }
 
@@ -84,21 +84,22 @@ int Menu()
     printf("1. Tampilkan isi kamus Sunda - Indonesia\n");
     printf("2. Tambah kosakata kamus\n");
     printf("3. Mencari kosakata bahasa Sunda\n");
+    printf("4. Edit kosakata\n");
+    printf("5. Hapus kosakata\n");
     printf("0. Keluar\n\n");
     printf("Masukan pilihan anda: ");
     scanf(" %[^\n]", ChoiceString);
 
     if (sscanf(ChoiceString, "%d", &Choice))
     {
-        if (Choice >= 0 && Choice <= 3)
+        if (Choice >= 0 && Choice <= 5)
             return Choice;
     }
 
     ErrorMsg("Pilihan anda tidak ada...");
     sleep(1.5);
     fflush(stdin);
-    Choice = Menu();
-    return Choice;
+    return Choice = Menu();
 }
 
 void Pause()
@@ -143,7 +144,7 @@ void ExitApps()
     for (int i = 1; i <= 3; i++)
     {
         printf(".");
-        sleep(0.5);
+        sleep(1);
     }
 }
 
@@ -176,6 +177,10 @@ void Execute(int Choice, Address *Tree, bool *Exit)
         if (Validasi())
             *Exit = true;
         break;
+    
+    default:
+        ErrorMsg("Fitur belum ada\n");
+        break;
     }
 }
 
@@ -191,7 +196,7 @@ void InsertKata(Address *Tree)
     InputKamus(&NewKamus.Sunda);
 
     // Lakukan pengecekan pada setiap kosakata yang ada di dalam kamus sunda
-    KamusSundaToList(&KamusSunda, NewKamus);
+    StringToList(&KamusSunda, NewKamus.Sunda);
     while (KamusSunda != NULL)
     {
         Address TempSunda = SearchTree((*Tree), KamusSunda->Info);
@@ -304,27 +309,44 @@ void InsertToFile(String NewVocab)
         /* Abi,Urang.=Saya,Gueh.(Abi jajan ka Bandung,Urang gelut jeung maneh.) */
         fprintf(fp, "%s", NewVocab);
         fclose(fp);
-        SuccMsg("Berhasil menuliskan kosakata baru ke dalam file Kamus-Sunda-Indonesia.dat");
+        SuccMsg("Berhasil menuliskan kosakata baru ke dalam file Kamus-Sunda-Indonesia.dat\n");
     }
     Pause();
 }
 
 String MergeKamus(Kamus NewKamus)
 {
-    String Result = AlokString(strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5);
-    Result[strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5] = 0;
+    bool HaveContoh = false;
+    String Result;
+    if(NewKamus.Contoh != NULL)
+        HaveContoh = true;
+    
+    if(HaveContoh)
+    {
+        Result = AlokString(strlen(NewKamus.Sunda) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5);
+        Result[strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 4] = 0;
+        ConvFromCharToChar(&NewKamus.Contoh, '.', ',');
+    }
+    else
+    {
+        Result = AlokString(strlen(NewKamus.Sunda) + strlen(NewKamus.Indonesia) + 3);
+        Result[strlen(NewKamus.Sunda) + strlen(NewKamus.Indonesia) + 2] = 0;
+    }
 
     ConvFromCharToChar(&NewKamus.Sunda, '.', ',');
     ConvFromCharToChar(&NewKamus.Indonesia, '.', ',');
-    ConvFromCharToChar(&NewKamus.Contoh, '.', ',');
 
     /* 18 + 4 '=' "()" 0 "*/
     strcpy(Result, NewKamus.Sunda);
     strcat(Result, "=");
     strcat(Result, NewKamus.Indonesia);
-    strcat(Result, "(");
-    strcat(Result, NewKamus.Contoh);
-    strcat(Result, ")");
+
+    if(HaveContoh)
+    {
+        strcat(Result, "(");
+        strcat(Result, NewKamus.Contoh);
+        strcat(Result, ")");
+    }
     strcat(Result, "\n");
     return Result;
 }
@@ -343,10 +365,10 @@ void InsertToTree(Address *Tree, Kamus NewKamus)
 {
     // Pisahkan kosakata bahasa sunda ke dalam Linked List
     AddressNodeNR ListVocabSunda = NULL;
-    KamusSundaToList(&ListVocabSunda, NewKamus);
+    StringToList(&ListVocabSunda, NewKamus.Sunda);
     while (ListVocabSunda != NULL)
     {
-        InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info);
+        InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info, 1);
         ListVocabSunda = ListVocabSunda->Next;
     }
 }
@@ -356,12 +378,12 @@ Address AlokTree()
     return (Address)malloc(sizeof(Binary));
 }
 
-Address CreateKamus(Kamus NewKamus, String VocabSunda)
+Address CreateKamus(Kamus NewKamus, String VocabSunda, int Height)
 {
     Address NewTree = AlokTree();
     if (NewTree != NULL)
     {
-        NewTree->Height = 1;
+        NewTree->Height = Height;
         NewTree->Left = NULL;
         NewTree->Right = NULL;
         NewTree->Kamus.Sunda = VocabSunda;
@@ -376,19 +398,19 @@ Address CreateKamus(Kamus NewKamus, String VocabSunda)
     return NewTree;
 }
 
-void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda)
+void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda, int Height)
 {
     if ((*Tree) == NULL)
-        (*Tree) = CreateKamus(NewKamus, VocabSunda);
+        (*Tree) = CreateKamus(NewKamus, VocabSunda, Height);
     else if (strcmp(VocabSunda, (*Tree)->Kamus.Sunda) < 0) // Jika Kamus sunda yang baru lebih kecil dari kamus yang lama
-        InsertBinaryTree(&(*Tree)->Left, NewKamus, VocabSunda);
+        InsertBinaryTree(&(*Tree)->Left, NewKamus, VocabSunda, Height+1);
     else
-        InsertBinaryTree(&(*Tree)->Right, NewKamus, VocabSunda);
+        InsertBinaryTree(&(*Tree)->Right, NewKamus, VocabSunda, Height+1);
 }
 
 void PrintTree(Address Root)
 {
-    if (Root != NULL)
+    if (Root != NULL)   
     {
         PrintTree(Root->Left);
         PrintKamus(Root->Kamus);
@@ -475,7 +497,7 @@ void LoadDataKamus(Address *Tree)
                 InsertToTree(&(*Tree), TempKamus);
             }
             fclose(fp);
-            SuccMsg("Berhasil memuat data kamu pada file Kamus-Sunda-Indonesia.dat");
+            SuccMsg("Berhasil memuat data kamu pada file Kamus-Sunda-Indonesia.dat\n");
         }
         else if (Row == -1)
         {
@@ -539,17 +561,17 @@ int CountChar(String StrCheck, char CharCheck)
     return Count;
 }
 
-void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus)
+void StringToList(AddressNodeNR *List, String Vocab)
 {
     unsigned int LenOfTemp = 0;
     unsigned int LenOfSunda = 0;
-    while (LenOfSunda != strlen(NewKamus.Sunda))
+    while (LenOfSunda != strlen(Vocab))
     {
-        String Temp = AlokString(strlen(NewKamus.Sunda));
-        Temp[strlen(NewKamus.Sunda)] = 0;
-        while (NewKamus.Sunda[LenOfSunda] != '.' && NewKamus.Sunda[LenOfSunda] != ',')
+        String Temp = AlokString(strlen(Vocab));
+        Temp[strlen(Vocab)] = 0;
+        while (Vocab[LenOfSunda] != '.' && Vocab[LenOfSunda] != ',')
         {
-            Temp[LenOfTemp] = NewKamus.Sunda[LenOfSunda];
+            Temp[LenOfTemp] = Vocab[LenOfSunda];
             LenOfTemp++;
             LenOfSunda++;
         }
@@ -598,3 +620,12 @@ void SearchKata(Address Tree)
 }
 
 /*=================================================*/
+
+
+/*==================== TEST =======================*/
+void Test()
+{
+    // int menu = Menu();
+    Pause();
+}
+/*==================== TEST =======================*/
