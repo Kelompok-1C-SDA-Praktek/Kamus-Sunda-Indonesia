@@ -8,14 +8,12 @@ AddressNodeNR InitNR()
     return NULL;
 }
 
-Infotype AlokString(int Len)
+String AlokString(int Len)
 {
-    // Infotype String = (Infotype)malloc((Len) * sizeof(char));
-    // return String;
-    return (Infotype)malloc((Len) * sizeof(char));
+    return (String)malloc((Len) * sizeof(char));
 }
 
-AddressNodeNR CreateNodeNR(Infotype Info)
+AddressNodeNR CreateNodeNR(String Info)
 {
     AddressNodeNR NewNode = (AddressNodeNR)malloc(sizeof(AddressNodeNR));
     if (NewNode != NULL)
@@ -36,7 +34,7 @@ int NRIsEmpty(AddressNodeNR NR)
     return (NR == NULL);
 }
 
-void InsertNR(AddressNodeNR *NR, Infotype Info)
+void InsertNR(AddressNodeNR *NR, String Info)
 {
     AddressNodeNR NewNode = CreateNodeNR(Info);
     if (NewNode != NULL)
@@ -53,7 +51,7 @@ void InsertNR(AddressNodeNR *NR, Infotype Info)
     }
 }
 
-void DeleteNR(AddressNodeNR *NR, Infotype Target)
+void DeleteNR(AddressNodeNR *NR, String Target)
 {
     AddressNodeNR Prev = NULL, Del = *NR;
     if (NRIsEmpty(*NR))
