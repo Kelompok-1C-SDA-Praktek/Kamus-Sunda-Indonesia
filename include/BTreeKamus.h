@@ -209,7 +209,7 @@ int CountChar(String StrCheck, char CharCheck);
     F.S: Sudah mengembalikan nilai integer senilai dengan berapa jumlah karakter yang terkandung di String
 */
 
-void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus);
+void StringToList(AddressNodeNR *List, Kamus NewKamus);
 /* Memisahkan nilai string (kosakata) yang dipisahkan oleh . menjadi sebuah list
     I.S: Linked list belum berisikan kata yang di pisahkan menjadi bagian bagian
     F.S: Linked list sudah berisikan kata yang di pisahkan menjadi bagian bagian

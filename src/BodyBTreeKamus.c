@@ -360,6 +360,7 @@ void InsertToTree(Address *Tree, Kamus NewKamus)
     }
 }
 
+
 Address AlokTree()
 {
     return (Address)malloc(sizeof(Binary));
@@ -548,7 +549,7 @@ int CountChar(String StrCheck, char CharCheck)
     return Count;
 }
 
-void KamusSundaToList(AddressNodeNR *List, Kamus NewKamus)
+void StringToList(AddressNodeNR *List, Kamus NewKamus)
 {
     unsigned int LenOfTemp = 0;
     unsigned int LenOfSunda = 0;
