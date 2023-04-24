@@ -9,7 +9,7 @@ int main()
     /* Program utama */
     // Memuat data
     LoadDataKamus(&KamusTree);
-
+    BalancingTree(&KamusTree);
     /* Run */
     while(!Exit) Execute(Menu(), &KamusTree, &Exit);
 

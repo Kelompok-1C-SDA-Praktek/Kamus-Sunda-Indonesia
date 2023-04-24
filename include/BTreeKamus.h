@@ -11,7 +11,7 @@
     Prodi       :   D4 Teknik Informatika
     Tanggal     :   29/3/2023
 */
-#define MAX_BUFFER 4092
+#define MAX_BUFFER 1024
 typedef char *String;
 
 typedef struct kamus
@@ -27,14 +27,87 @@ typedef struct binary
     Kamus Kamus;
 } Binary;
 
+/*================ BALANCING ==============*/
+typedef struct balancing *AddressBalancing;
+typedef struct balancing
+{
+    Kamus Kamus;
+    AddressBalancing Next;
+} Balancing;
+
+AddressBalancing InitBalance();
+/* Menginisialisasikan variabel bertipe AddressBalancing menjadi NULL
+    I.S: Function sudah mengembalikan nilai NULL
+    F.S: Function sudah mengembalikan nilai NULL
+*/
+
+AddressBalancing CreateNodeBalance(Kamus NewKamus);
+
+/* Mengalokasikan memori seukuran satu AddressBalancing dan mengisi info yang ada di dalamnya dengan Info
+    I.S: Memori belum teralokasikan dan belum berisikan informasi dari Info
+    F.S: Memori sudah teralokasikan dan sudah berisikan informasi dari Info
+*/
+
+int BalancingIsEmpty(AddressBalancing Balancing);
+/* Mengecek apakah linked list itu kosong apa tidak
+    I.S: Belum mengembalikan nilai apapun
+    F.S: Mengembalikan nilai 1 jika kosong dan 0 jika tidak kosong
+*/
+
+void InsertBalancing(AddressBalancing *Balancing, Kamus NewKamus);
+/* Menambahkan node barud di akhir linked list yang berisikan informasi dari Info
+    I.S: Node baru belum bertambah pada linked list
+    F.S: Node baru sudah bertambah pada linked list
+*/
+
+void DeleteBalancing(AddressBalancing *Balancing, String Target);
+/* Menghapus node yang memiliki informasi yang sama dengan Target
+    I.S: Node yang memiliki informasi yang sama dengan target belum terhapus
+    I.S: Node yang memiliki informasi yang sama dengan target sudah terhapus
+*/
+
+void BalancingTree(Address *Tree);
+/* Mengubah struktur data tree yang tidak balance menjadi balance
+    I.S: Struktur tree belum balance
+    F.S: Struktur tree sudah balance
+*/
+
+void SortBalancing(Address Tree, AddressBalancing *ListBalancing);
+/* Mengurutkan informasi yang ada di tree dan dimasukannya kedalam ListBalancing yang merupakan sebuah linked list
+    I.S: Data yang ada di tree belum masuk dan belum terurut di dalam Linked List ListBalancing
+    F.S: Data yang ada di tree sudah masuk dan sudah terurut di dalam Linked List ListBalancing
+*/
+
+void InsertTreeBalancing(Address *Tree, AddressBalancing *ListBalancing);
+/* Memasukan informasi yang sudah terurut di dalam ListBalancing ke dalam struktur tree dengan
+    mencari informasi yang ada di tengah lalu membagi dua list secara rekursif
+    I.S: Tree belum balance
+    F.S: Tree sudah balance
+*/
+
+AddressBalancing MidBalancing(AddressBalancing NodeBalancing);
+/* Mencari lalu mengembalikan alamat linked list yang berisikan informasi tree yang berada di tengah
+    untuk dijadikan root
+    I.S: Belum mengembalikan alamat linked list yang memegang informasi tree yang berada di posisi tengah
+    I.S: Sudah mengembalikan alamat linked list yang memegang informasi tree yang berada di posisi tengah
+*/
+
+int CountListBalancing(AddressBalancing ListBalancing);
+/* Menghitung seluruh jumlah informasi tree
+    I.S: Jumlah seluruh informasi tree belum diketahui
+    F.S: Jumlah seluruh informasi tree sudah diketahui dan dikembalikan
+*/
+
+/*================ BALANCING ==============*/
+
 /* ==================================================== */
-/* ================= Coding Area Roy ================== */
+/* ================= Roy ================== */
 
 /* Modul amogus-9 */
 
 void Koor(int Baris, int Kolom);
 /* Mengatur tata letak kursor untuk output layar
-    I.S:    
+    I.S:
     F.S: kursor program akan menunjuk ke index yang sudah di tentukan di parameter
 */
 
@@ -61,7 +134,6 @@ void SuccMsg(String SuccesMessage);
     I.S: pesan yang dikirim pada parameter belum tampil
     F.S: pesan yang dikirim di parameter sudah tampil dan berwarna hijau
 */
-
 
 /* Modul Kami*/
 int Menu();
@@ -212,17 +284,14 @@ void StringToList(AddressNodeNR *List, String Vocab);
     F.S: Linked list sudah berisikan kata yang di pisahkan menjadi bagian bagian
 */
 
-
 /* ==================================================== */
 /* ==================================================== */
 
-/* =============== End Of Coding Area Roy ============= */
+/* =============== Roy ============= */
 
 /*================Naila================================ */
 Address SearchTree(Address Root, String Input);
 void SearchKata(Address Tree);
 /*================Naila================================ */
-
-void Test();
 
 #endif // !BTREEKAMUS_H

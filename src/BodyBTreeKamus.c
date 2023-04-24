@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <time.h>
 
 /* Define Kode Warna */
 #define FG_BLACK 0x00
@@ -485,6 +486,7 @@ void LoadDataKamus(Address *Tree)
                 TempKamus.Indonesia = AlokString(strlen(Indonesia) + 1);
                 TempKamus.Contoh = NULL;
                 strcpy(TempKamus.Sunda, Sunda);
+                TempKamus.Sunda[0] = toupper(TempKamus.Sunda[0]);
                 TempKamus.Sunda[strlen(Sunda)] = 0;
                 strcpy(TempKamus.Indonesia, Indonesia);
                 TempKamus.Indonesia[strlen(Indonesia)] = 0;
@@ -582,6 +584,8 @@ void StringToList(AddressNodeNR *List, String Vocab)
     }
 }
 
+/*================= Roy =======================*/
+
 /*=======================Naila=====================*/
 
 Address SearchTree(Address Root, String Input)
@@ -605,10 +609,13 @@ void SearchKata(Address Tree)
     printf("Masukan kosakata yang akan dicari dalam bahasa sunda : ");
     scanf(" %[^\n]", InputUser);
     InputUser[0] = toupper(InputUser[0]);
+    double start = ((double)clock()) / CLOCKS_PER_SEC;
     TempTree = SearchTree(Tree, InputUser);
-
+    double end = ((double)clock()) / CLOCKS_PER_SEC;
+    
     if (TempTree != NULL)
     {
+        printf("Kecepatan pencarian : %f\n", end-start);
         HeaderKamus();
         PrintKamus(TempTree->Kamus); // kalo ditemukan dalam tree
     }
@@ -620,12 +627,3 @@ void SearchKata(Address Tree)
 }
 
 /*=================================================*/
-
-
-/*==================== TEST =======================*/
-void Test()
-{
-    // int menu = Menu();
-    Pause();
-}
-/*==================== TEST =======================*/
