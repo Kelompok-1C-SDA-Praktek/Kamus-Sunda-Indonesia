@@ -130,7 +130,7 @@ PROCEDURE InsertKata(Tree : Address)
             // Tidak bisa dilanjutkan karena sudah ada
             // Kalo mau edit aja kosakata yang lalu
             OUTPUT "Peringatan!\n"
-            OUTPUT "Kosakata" + KamusSunda->Info + " sudah ada, silahkan lakukan pengeditan menggunakan fitur edit kata jika ingin menambahkan sesuatu pada kosakata tersebut\n"
+            OUTPUT "Kosakata" + KamusSunda^.Info + " sudah ada, silahkan lakukan pengeditan menggunakan fitur edit kata jika ingin menambahkan sesuatu pada kosakata tersebut\n"
             Pause()
             dealok(NewKamus.Sunda)
             ValidToContinou <- false
@@ -222,20 +222,35 @@ END PROCEDURE
 // Function MergeKamus
 // NewKamus : Input
 FUNCTION MergeKamus(NewKamus : Kamus) RETURN String
+	DECLARE HaveContoh : BOOLEAN
 	DECLARE Result : String
-	Result <- AlokString(strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 6)
-	Result[strlen(NewKamus.Contoh) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5] <- 0
 	
+	IF (NewKamus.Contoh != NULL) THEN
+		HaveContoh <- TRUE
+	END IF
+
+	IF (HaveContoh) THEN
+		Result <- AlokString(strlen(NweKamus.Sunda) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 5)
+		Result[strlen(NweKamus.Sunda) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 4)] <- 0
+		CALL ConvFromCharToChar(&NewKamus.Contoh, '.', ',')
+	ELSE
+		Result <- AlokString(strlen(NweKamus.Sunda) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 3)
+		Result[strlen(NweKamus.Sunda) + strlen(NewKamus.Indonesia) + strlen(NewKamus.Contoh) + 2)] <- 0
+	END IF
+
 	CALL ConvFromCharToChar(&NewKamus.Sunda, '.', ',')
     CALL ConvFromCharToChar(&NewKamus.Indonesia, '.', ',')
-    CALL ConvFromCharToChar(&NewKamus.Contoh, '.', ',')
 	
     strcpy(Result, NewKamus.Sunda)
     strcat(Result, "=")
     strcat(Result, NewKamus.Indonesia)
-    strcat(Result, "(")
-    strcat(Result, NewKamus.Contoh)
-    strcat(Result, ")")
+
+    IF (HaveContoh) THEN
+    
+        strcat(Result, "(")
+        strcat(Result, NewKamus.Contoh)
+        strcat(Result, ")")
+    END IF
     strcat(Result, "\n")
     RETURN Result
 END FUNCTION
@@ -250,7 +265,7 @@ PROCEDURE ConvFromCharToChar(Vocab : String, CharFrom, CharThis : CHAR)
 		IF(Vocab[i] = CharFrom AND i != LenOfVocab) THEN
 			Vocab[i] <- CharThis
 		END IF
-	ENDFOR
+	END FOR
 END PROCEDURE
 
 
@@ -263,7 +278,7 @@ PROCEDURE InsertToTree(Tree : Address, NewKamus : Kamus)
 	WHILE(ListVocabSunda != NULL) DO
 		CALL InsertBinaryTree(&Tree, NewKamus, Temp)
 		ListVocabSunda <- ListVocabSunda^.Next
-	ENDWHILE
+	END WHILE
 END PROCEDURE
 
 // Function AlokTree
@@ -349,7 +364,7 @@ FUNCTION HasChar(Check : String, Contain : CHAR) RETURN BOOLEAN
 	DECLARE Len, i : INTEGER
 	Len <- strlen(Check)
 	FOR (i <- 1 TO LEN STEP 1)
-		IF(Check[i] == Contain) THEN
+		IF(Check[i] = Contain) THEN
 			RETURN TRUE
 		END IF
 	END FOR
@@ -471,3 +486,164 @@ PROCEDURE StringToList(List : AddressNodeNR, Vocab : String)
 		CALL InsertNR(&ListVocabSunda, Temp)
 	ENDWHILE
 END PROCEDURE
+
+
+// Balancing
+// Funcrion InitBalance()
+FUNCTION InitBalance() RETURN AddressNodeNR
+	RETURN NULL
+END FUNCTION
+
+// Function CreateModeBalance
+// Input : NewKamus
+FUNCTION CreateModeBalance() RETURN AddressNodeNR
+	DECLARE NewBalancing : AddressBalancing
+	NewBalancing <- alok(sizeof(Balancing))
+	IF (NewBalancing != NULL)
+		NewBalancing.Kamus <- NewKamus
+		NewBalancing.Next <- NULL
+	ELSE
+		OUTPUT "Terjadi kesalahan: Mungkin memori sudah penuh...\n"
+	END IF
+	RETURN NewBalancing
+END FUNCTION
+
+
+// Function BalancingIsEmpty
+// Input : Balancing
+FUNCTION BalancingIsEmpty(Balancing : AddressBalancing) RETURN AddressNodeNR
+	RETURN (Balancing = NULL)
+END FUNCTION
+
+// Procedure InsertBalancing()
+// Output : Balancing
+// Input : NewKamus
+PROCEDURE InsertBalancing(Balancing : AddressBalancing, NewKamus : Kamus)
+	NewBalancing : AddressBalancing
+	NewBalancing <- CreateModeBalance(NewKamus)
+	IF (NewBalancing != NULL) THEN
+		IF (Balancing != NULL) THEN
+			Temp : AddressBalancing
+			Temp <- Balancing
+			WHILE (Temp^.Next != NULL) DO
+				Temp <- Temp^.Next
+			END WHILE
+			Temp^.Next <- NewBalancing
+		ELSE
+			Balancing <- NewBalancing
+		END IF
+	END IF
+END PROCEDURE
+
+// Procedure DeleteBalancing
+// Output : Balancing
+// INput : Target
+PROCEDURE DeleteBalancing(Balancing : AddressBalancing, Target : String)
+	Prev, Del : AddressBalancing
+	IF (BalancingIsEmpty(Balancing)) THEN
+		OUTPUT "Data sudah kosong...\n"
+	ELSE
+		WHILE (Del != NULL && strcmp(Del^.Kamus.Sunda, Target) != 0) DO
+			Prev <- Del
+			Del <- Del^.Next
+		END WHILE
+
+		IF (Del = NULL) THEN
+
+		ELSE
+			IF (Prev = NULL) THEN
+				Balancing <- Del^.Next
+				CALL dealok(Del^.Kamus.Sunda)
+				CALL dealok(Del)
+			END IF
+		ELSE
+			Prev^.Next <- Del^.Next
+			CALL dealok(Del^.Kamus.Sunda)
+			CALL dealok(Del)
+		END IF
+	END IF
+END PROCEDURE
+
+// Procedure BalancingTree
+// Output : Tree
+// Input : Tree
+PROCEDURE BalancingTree(Tree : Address)
+	ListBalancing : AddressBalancing
+	ListBalancing <- InitBalance()
+	CALL SortBalancing(Tree, &ListBalancing)
+	Tree <- NULL
+	IF(ListBalancing != NULL) THEN
+		CALL InsertTreeBalancing(&Tree, &ListBalancing)
+	END IF
+END PROCEDURE
+
+// Procedure SortBalancing
+// Input : Tree, ListBalancing
+// Output : ListBalancing
+PROCEDURE SortBalancing(Tree : Address, ListBalancing : AddressBalancing)
+	IF (Tree != NULL) THEN
+		CALL SortBalancing(Tree^.Left, &ListBalancing)
+		CALL InsertBalancing(&ListBalancing, Tree^.Kamus)
+		CALL SortBalancing(Tree^.Right, &ListBalancing)
+	END IF
+END PROCEDURE
+
+// Procedure InsertTreeBalancing
+// Output & Input : Tree, Listbalancing
+PROCEDURE InsertTreeBalancing(Tree : Address, ListBalancing : AddressBalancing)
+	IF(Listbalancing != NULL)THEN
+		Root, PrevRoot, ListLeft, ListRight : AddressBalancing
+		Root <- MidBalancing(ListBalancing)
+		PrevRoot <- InitBalance()
+		ListLeft <- InitBalance()
+		ListRight <- InitBalance()
+
+		CALL InsertBinaryTree(&Tree, Root^.Kamus, Root^.Kamus.Sunda, 1)
+
+		IF (Root != NULL) THEN
+			ListLeft <- ListBalancing
+		ELSE
+			ListLeft <- NULL
+		END IF
+		ListRight <- Root^.Next
+		PrevRoot <- ListLeft
+		WHILE (PrevRoot != NULL) DO
+			IF (PrevRoot^.Next != NULL AND Root != NULL) THEN
+				IF (strcmp(PrevRoot^.Next^.Kamus.Sunda, Root^.Kamus.Sunda) = 0) THEN
+					break
+				END IF
+			END IF
+			PrevRoot <- PrevRoot^.Next
+		END WHILE
+		CALL dealok(Root)
+		Root <- NULL
+		IF(PrevRoot != NULL) THEN
+			PrevRoot^.Next <- NULL
+		END IF
+		CALL InsertTreeBalancing(&Tree, &ListLeft)
+		CALL InsertTreeBalancing(&Tree, &ListRight)
+	END IF
+END PROCEDURE
+
+// Function MidBalancing
+// Input : NodeBalancing
+FUNCTION MidBalancing(NodeBalancing : AddressBalancing) RETURN AddressBalancing
+	DECLARE LenList, i : INTEGER
+	LenList <- (LenList % 2 = 1) ? LenList / 2 + 1 : LenList / 2
+    for (i <- 1 to LenList STEP 1)
+    DO
+        NodeBalancing <- NodeBalancing->Next
+    END FOR
+    RETURN NodeBalancing
+END FUNCTION
+
+// Function CountListBalancing
+// Input : ListBalancing
+FUNCTION CountListBalancing(ListBalancing : AddressBalancing) RETURN INTEGER
+	Total : INTEGER
+	Total <- 0
+	WHILE (ListBalancing != NULL) DO
+		Total <- Total + 1
+		Listbalancing <- ListBalancing^.Next
+	END WHILE
+END FUNCTION

@@ -43,9 +43,9 @@ AddressBalancing InitBalance();
 
 AddressBalancing CreateNodeBalance(Kamus NewKamus);
 
-/* Mengalokasikan memori seukuran satu AddressBalancing dan mengisi info yang ada di dalamnya dengan Info
-    I.S: Memori belum teralokasikan dan belum berisikan informasi dari Info
-    F.S: Memori sudah teralokasikan dan sudah berisikan informasi dari Info
+/* Mengalokasikan memori seukuran satu AddressBalancing dan mengisi info yang ada di dalamnya dengan NewKamus
+    I.S: Memori belum teralokasikan dan belum berisikan informasi dari NewKamus
+    F.S: Memori sudah teralokasikan dan sudah berisikan informasi dari NewKamus
 */
 
 int BalancingIsEmpty(AddressBalancing Balancing);
@@ -55,7 +55,7 @@ int BalancingIsEmpty(AddressBalancing Balancing);
 */
 
 void InsertBalancing(AddressBalancing *Balancing, Kamus NewKamus);
-/* Menambahkan node barud di akhir linked list yang berisikan informasi dari Info
+/* Menambahkan node barud di akhir linked list yang berisikan informasi dari NewKamus
     I.S: Node baru belum bertambah pada linked list
     F.S: Node baru sudah bertambah pada linked list
 */
@@ -97,6 +97,12 @@ int CountListBalancing(AddressBalancing ListBalancing);
     I.S: Jumlah seluruh informasi tree belum diketahui
     F.S: Jumlah seluruh informasi tree sudah diketahui dan dikembalikan
 */
+
+
+/*Cek Apakah sudah seimbang Sumber: https://www.codezclub.com/c-check-binary-tree-avl-tree-or-not/*/
+int height(Address ptr);
+int isAVL(Address ptr);
+/*Cek Apakah sudah seimbang Sumber: https://www.codezclub.com/c-check-binary-tree-avl-tree-or-not/*/
 
 /*================ BALANCING ==============*/
 
@@ -252,16 +258,22 @@ void PrintKamus(Kamus Kamus);
     F.S: Isi dari nilai yang ada di kamus sudah tampil ke layar
 */
 
-void LoadDataKamus(Address *Tree);
-/* Memuat data yang ada di dalam file Kamus-Sunda-Indonesia.dat dan memasukan data yang ada ke dalam struktur binary tree
-    I.S: Struktur data binary tree belum berisikan informasi yang ada di dalam file Kamus-Sunda-Indonesia.dat
-    F.S: Struktur data binary tree sudah berisikan informasi yang ada di dalam file Kamus-Sunda-Indonesia.dat
-*/
-
 void HeaderKamus();
 /* Menampilkan header kamus ke layar
     I.S: Header kamus belum tampil ke layar
     F.S: Header kamus sudah tampil ke layar
+*/
+
+bool HasChar(String Check, char Contain);
+/* Mengecek apakah pada String terdapat sebuah karakter yang dikirim di parameter 'Contain'
+    I.S: Karakter belum diketahui keberadaannya dan belum mengembalikan nilai true/false
+    F.S: Mengembalikan nilai true jika terdapat karakter yang dicari dan nilai false jika tidak ada karakter yang dicari
+*/
+
+void LoadDataKamus(Address *Tree);
+/* Memuat data yang ada di dalam file Kamus-Sunda-Indonesia.dat dan memasukan data yang ada ke dalam struktur binary tree
+    I.S: Struktur data binary tree belum berisikan informasi yang ada di dalam file Kamus-Sunda-Indonesia.dat
+    F.S: Struktur data binary tree sudah berisikan informasi yang ada di dalam file Kamus-Sunda-Indonesia.dat
 */
 
 int IsFileValid();

@@ -170,8 +170,22 @@ void Execute(int Choice, Address *Tree, bool *Exit)
     case 3:
         // Mencari string
         system("cls");
+        if(isAVL((*Tree)))
+        {
+            SuccMsg("Status kecepatan pencarian : Baik\n");
+        }
+        else
+        {
+            ErrorMsg("Status kecepatan pencarian : Buruk\n");
+            ErrorMsg("Perbaiki kecepatan?\n");
+            if(Validasi())
+            {
+                BalancingTree(&(*Tree));
+            }
+        }
         SearchKata((*Tree));
         break;
+    
     case 0:
         // Tambahkan kosakata baru kedalam kamus
         printf("Apakah anda yakin untuk keluar?\n");

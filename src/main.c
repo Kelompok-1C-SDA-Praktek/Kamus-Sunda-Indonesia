@@ -3,16 +3,14 @@
 int main()
 {
     /* Deklarasi variabel */
-    Address KamusTree = NULL;
+    Address RootKamus = NULL;
     bool Exit = false;
     
     /* Program utama */
     // Memuat data
-    LoadDataKamus(&KamusTree);
-    BalancingTree(&KamusTree);
+    LoadDataKamus(&RootKamus);
     /* Run */
-    while(!Exit) Execute(Menu(), &KamusTree, &Exit);
-
+    while(!Exit) Execute(Menu(), &RootKamus, &Exit);
     /* End program */
     ExitApps();
     return 0;
