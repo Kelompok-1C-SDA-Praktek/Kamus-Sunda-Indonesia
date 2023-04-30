@@ -1,5 +1,7 @@
 #include "BTreeKamus.h"
 
+#include <stdio.h>
+
 int main()
 {
     /* Deklarasi variabel */
@@ -8,10 +10,10 @@ int main()
     
     /* Program utama */
     // Memuat data
-    LoadDataKamus(&RootKamus);
+    // remove("Kamus-Sunda-Indonesia.dat");
+    CheckAndLoadFile(&RootKamus);
     /* Run */
     while(!Exit) Execute(Menu(), &RootKamus, &Exit);
-    /* End program */
-    ExitApps();
+    
     return 0;
 }

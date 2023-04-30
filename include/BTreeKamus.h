@@ -197,8 +197,8 @@ void Input(String *NewVocab);
     F.S: String NewVocab sudah di tambahkan kosakata baru
 */
 
-void InsertToFile(String NewVocab);
-/* Untuk menuliskan String apapun ke dalam file Kamus-Sunda-Indonesia.dat / Namun untuk kasus ini saya menuliskan
+void InsertToFile(String NewVocab, String NamaFile);
+/* Untuk menuliskan String apapun ke dalam file NamaFile / Namun untuk kasus ini saya menuliskan
     gabungan kosakata bahasa sunda,indonesia dan juga contohnya dengan contoh format "Abi,Urang,Aing.=Saya,Aku,Gueh.(Abi ganteng pisan.)"
     I.S: String yang ada di parameter belum dituliskan kedalam file Kamus-Sunda-Indonesia.dat
     F.S: String yang ada di parameter sudah dituliskan kedalam file Kamus-Sunda-Indonesia.dat
@@ -295,6 +295,11 @@ void StringToList(AddressNodeNR *List, String Vocab);
     I.S: Linked list belum berisikan kata yang di pisahkan menjadi bagian bagian
     F.S: Linked list sudah berisikan kata yang di pisahkan menjadi bagian bagian
 */
+
+void StringToKamus(Kamus *NewKamus, String Vocab);
+int RefactorFile();
+void CheckAndLoadFile(Address *Tree);
+// void StringToUpper(char Vocab[]);
 
 /* ==================================================== */
 /* ==================================================== */
