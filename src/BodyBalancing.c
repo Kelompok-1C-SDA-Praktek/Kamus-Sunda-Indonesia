@@ -89,14 +89,21 @@ void BalancingTree(Address *Tree)
     /* Masukan seluruh yang ada di tree ke dalam linked list
         masukan secara inorder agar terurut
      */
-    AddressBalancing ListBalancing = InitBalance();
-    SortBalancing((*Tree), &ListBalancing);
-    /* Hapus semua isi tree karena akan diisi oleh tree baru */
-    // Sementara null kan saja
-    *Tree = NULL;
-    /* InsertTreeBalancing yang baru */
-    if (ListBalancing != NULL)
-        InsertTreeBalancing(&(*Tree), &(ListBalancing));
+    int Loop = 1;
+    while (Loop <= 10)
+    {
+        AddressBalancing ListBalancing = InitBalance();
+        SortBalancing((*Tree), &ListBalancing);
+        /* Hapus semua isi tree karena akan diisi oleh tree baru */
+        // Sementara null kan saja
+        *Tree = NULL;
+        /* InsertTreeBalancing yang baru */
+        if (ListBalancing != NULL)
+            InsertTreeBalancing(&(*Tree), &(ListBalancing));
+        if(isAVL((*Tree)))
+            break;
+        Loop++;
+    }
 }
 
 void SortBalancing(Address Tree, AddressBalancing *ListBalancing)
@@ -178,3 +185,32 @@ int CountListBalancing(AddressBalancing ListBalancing)
     }
     return Total;
 }
+
+int isAVL(Address ptr)
+{
+    int h_l, h_r, diff;
+    if (ptr == NULL)
+        return 1;
+    h_l = height(ptr->Left);
+    h_r = height(ptr->Right);
+    diff = h_l > h_r ? h_l - h_r : h_r - h_l;
+    if (diff <= 1 && isAVL(ptr->Left) && isAVL(ptr->Right))
+        return 1;
+    return 0;
+}
+
+int height(Address ptr)
+{
+    int h_left, h_right;
+
+    if (ptr == NULL) /*Base Case*/
+        return 0;
+
+    h_left = height(ptr->Left);
+    h_right = height(ptr->Right);
+
+    if (h_left > h_right)
+        return 1 + h_left;
+    else
+        return 1 + h_right;
+} /*End of height()*/

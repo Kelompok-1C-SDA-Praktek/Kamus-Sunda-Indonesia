@@ -1,19 +1,19 @@
 #include "BTreeKamus.h"
 
+#include <stdio.h>
+
 int main()
 {
     /* Deklarasi variabel */
-    Address KamusTree = NULL;
+    Address RootKamus = NULL;
     bool Exit = false;
     
     /* Program utama */
     // Memuat data
-    LoadDataKamus(&KamusTree);
-    BalancingTree(&KamusTree);
+    // remove("Kamus-Sunda-Indonesia.dat");
+    CheckAndLoadFile(&RootKamus);
     /* Run */
-    while(!Exit) Execute(Menu(), &KamusTree, &Exit);
-
-    /* End program */
-    ExitApps();
+    while(!Exit) Execute(Menu(), &RootKamus, &Exit);
+    
     return 0;
 }
