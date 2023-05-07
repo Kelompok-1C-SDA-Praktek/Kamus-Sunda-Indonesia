@@ -1,154 +1,40 @@
 #include "BTreeKamus.h"
 
-#include <conio.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <time.h>
-
-/* Define Kode Warna */
-#define FG_BLACK 0x00
-#define FG_BLUE 0x01
-#define FG_GREEN 0x02
-#define FG_CYAN 0x03
-#define FG_RED 0x04
-#define FG_MAGENTA 0x05
-#define FG_YELLOW 0x06
-#define FG_WHITE 0x07
-
-#define BG_BLACK 0x00
-#define BG_BLUE 0x10
-#define BG_GREEN 0x20
-#define BG_CYAN 0x30
-#define BG_RED 0x40
-#define BG_MAGENTA 0x50
-#define BG_YELLOW 0x60
-#define BG_WHITE 0x70
-
-#define NONE 0
-
-/* End Define*/
 
 const char FileKamus[26] = "Kamus-Sunda-Indonesia.dat";
 
 /* ==================================================== */
 /* ================= Area Coding Roy ================== */
 
-void Koor(int Baris, int Kolom)
-{
-    HANDLE h;
-    COORD c;
-    c.Y = Baris;
-    c.X = Kolom;
-    h = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleCursorPosition(h, c);
-}
-
 /* ============================================== */
-void SetColor(int kode1, int kode2)
+
+
+int CountNode(Address Tree)
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, kode1 | kode2);
+    if(Tree == NULL)
+        return 0;
+    else
+        return 1 + CountNode(Tree->Left) + CountNode(Tree->Right);
 }
 
-void DefaultColor()
+void PrintStatusProgram(Address Tree)
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, BG_BLACK | FG_WHITE);
-}
-
-void ErrorMsg(String ErrorMessage)
-{
-    SetColor(BG_RED, FG_BLACK);
-    printf("%s", ErrorMessage);
-    DefaultColor();
-}
-
-void SuccMsg(String SuccesMessage)
-{
-    SetColor(BG_GREEN, FG_BLACK);
-    printf("%s", SuccesMessage);
-    DefaultColor();
-}
-
-/* ===================================================== */
-
-int Menu()
-{
-    int Choice;
-    char ChoiceString[MAX_BUFFER];
-    system("cls");
-    printf("\nMenu\n");
-    printf("1. Tampilkan isi kamus Sunda - Indonesia\n");
-    printf("2. Tambah kosakata kamus\n");
-    printf("3. Mencari kosakata bahasa Sunda\n");
-    printf("4. Edit kosakata\n");
-    printf("5. Hapus kosakata\n");
-    printf("0. Keluar\n\n");
-    printf("Masukan pilihan anda: ");
-    scanf(" %[^\n]", ChoiceString);
-
-    if (sscanf(ChoiceString, "%d", &Choice))
+    int Height = height(Tree);
+    int MaxHeight = round(log2(CountNode(Tree)));
+    printf("Jumlah tree saat ini : %d\n", CountNode(Tree));
+    printf("Ketinggian maksimum tree saat ini harus : %d\n", MaxHeight);
+    printf("Ketinggian tree saat ini : %d\n", Height);
+    printf("Status : ");
+    if(Height <= MaxHeight)
     {
-        if (Choice >= 0 && Choice <= 5)
-            return Choice;
+        SuccMsg("Baik\n");
     }
-
-    ErrorMsg("Pilihan anda tidak ada...");
-    sleep(1.5);
-    return Choice = Menu();
-    fflush(stdin);
-}
-
-void Pause()
-{
-    SetColor(BG_GREEN, FG_BLACK);
-    printf("\nTekan tombol apapun untuk melanjutkan...\n");
-    getch();
-    DefaultColor();
-    fflush(stdin);
-}
-
-bool Validasi()
-{
-    char Choice = ' ';
-    printf("Tekan tombol ");
-    SetColor(NONE, FG_RED);
-    printf("[Y]");
-    DefaultColor();
-    printf(" jika iya...\n");
-
-    printf("Tekan tombol ");
-    SetColor(NONE, FG_GREEN);
-    printf("[N]");
-    DefaultColor();
-    printf(" jika tidak...\n");
-
-    while ((Choice != 'Y') && (Choice != 'N'))
+    else
     {
-        Choice = toupper(getch());
-    }
-    fflush(stdin);
-    return (Choice == 'Y');
-}
-
-void ExitApps()
-{
-    SetColor(BG_BLUE, FG_WHITE);
-    printf("Terima kasih telah menggunakan aplikasi kami (^_^) \n");
-    printf("Keluar aplikasi");
-    SetColor(FG_WHITE, BG_RED);
-    for (int i = 1; i <= 3; i++)
-    {
-        printf(".");
-        sleep(1);
+        ErrorMsg("Buruk\n");
     }
 }
 
-/* ============================================== */
 void Execute(int Choice, Address *Tree, bool *Exit)
 {
     switch (Choice)
@@ -159,7 +45,6 @@ void Execute(int Choice, Address *Tree, bool *Exit)
         HeaderKamus();
         ((*Tree) == NULL) ? ErrorMsg("Kamus tidak terdeteksi...\n") : PrintTree((*Tree));
         Pause();
-        Koor(0, 0);
         break;
     case 2:
         // Tambahkan kosakata baru kedalam kamus
@@ -172,20 +57,48 @@ void Execute(int Choice, Address *Tree, bool *Exit)
         system("cls");
         if (isAVL((*Tree)))
         {
-            SuccMsg("Status kecepatan pencarian : Baik\n");
+            PrintStatusProgram((*Tree));
         }
         else
         {
-            ErrorMsg("Status kecepatan pencarian : Buruk\n");
+            PrintStatusProgram((*Tree));
             ErrorMsg("Perbaiki kecepatan?\n");
             if (Validasi())
             {
                 BalancingTree(&(*Tree));
             }
+            if(isAVL((*Tree)))
+            PrintStatusProgram((*Tree));
         }
         SearchKata((*Tree));
         break;
+    case 4:
+        system("cls");
+        EditTree(*Tree);
+        break;
 
+    case 5:
+        // Menghapus kosakata
+        system("cls");
+        char InputUser[MAX_BUFFER];
+        printf("Masukan kosakata yang akan dihapus dalam bahasa sunda : ");
+        scanf(" %[^\n]", InputUser);
+        InputUser[0] = toupper(InputUser[0]);
+        DeleteFromTree(&(*Tree), InputUser);
+        SaveTreeToFile((*Tree), "Kamus-Sunda-Indonesia.dat");  
+        Pause();
+        break;
+    case 6: 
+        printTreeWithRoot(*Tree);
+        Pause();
+        break;
+    case 7:
+        PrintStatusProgram((*Tree));
+        printf("Proses balancing...\n");
+        BalancingTree(&(*Tree));
+        PrintStatusProgram((*Tree));
+        Pause();
+        break;
     case 0:
         // Tambahkan kosakata baru kedalam kamus
         printf("Apakah anda yakin untuk keluar?\n");
@@ -193,6 +106,7 @@ void Execute(int Choice, Address *Tree, bool *Exit)
         {
             *Exit = true;
             /* End program */
+            SaveTreeToFile((*Tree), "Kamus-Sunda-Indonesia.dat");
             ExitApps();
         }
         break;
@@ -223,10 +137,10 @@ void InsertKata(Address *Tree)
         {
             // Tidak bisa dilanjutkan karena sudah ada
             // Kalo mau edit aja kosakata yang lalu
-            ErrorMsg("Peringatan!\n");
+            ErrorMsg("\nPeringatan!\n");
             printf("Kosakata ");
             ErrorMsg(KamusSunda->Info);
-            printf(" sudah ada, silahkan lakukan pengeditan menggunakan fitur edit kata jika ingin menambahkan sesuatu pada kosakata tersebut\n");
+            printf(" sudah ada di dalam program, silahkan lakukan pengeditan menggunakan fitur edit kata jika ingin menambahkan sesuatu pada kosakata tersebut\n");
             Pause();
             free(NewKamus.Sunda);
             ValidToContinou = false;
@@ -271,8 +185,7 @@ void InputKamus(String *NewVocab)
         printf("%s\n", *NewVocab);
         if ((*NewVocab) != NULL)
         {
-
-            printf("\nTambahkan kosakata lain yang mirip?\n");
+            printf("\nTambahkan sinonim kata bahasa sundanya?\n");
             if (!Validasi())
                 break;
         }
@@ -309,7 +222,7 @@ void Input(String *NewVocab)
         }
         unsigned int LenOfNewVocab = strlen(*NewVocab);
         LenOfVocab = strlen(Temp);
-        (*NewVocab) = (String) realloc((*NewVocab), (LenOfNewVocab + LenOfVocab + 1) * sizeof(char));
+        (*NewVocab) = (String)realloc((*NewVocab), (LenOfNewVocab + LenOfVocab + 1) * sizeof(char));
         strcat((*NewVocab), Temp);
         (*NewVocab)[LenOfVocab + LenOfNewVocab] = 0;
     }
@@ -397,7 +310,6 @@ void InsertToTree(Address *Tree, Kamus NewKamus)
         InsertBinaryTree(&(*Tree), NewKamus, ListVocabSunda->Info, 1);
         ListVocabSunda = ListVocabSunda->Next;
     }
-    SuccMsg("Berhasil menambahkan kedalam sistem\n");
 }
 
 Address AlokTree()
@@ -458,8 +370,11 @@ void PrintKamus(Kamus Kamus)
     if (Kamus.Indonesia != NULL)
         printf("%s", Kamus.Indonesia);
 
-    SetColor(NONE, FG_BLUE);
-    (Kamus.Contoh != NULL) ? printf("\tContoh: %s\n", Kamus.Contoh) : printf("\tTidak ada contoh tersedia\n");
+    SetColor(NONE, FG_WHITE);
+    printf("\n");
+    (Kamus.Contoh != NULL) ? printf("Contoh: %s\n\n", Kamus.Contoh) : printf("Tidak ada contoh kalimat yang tersedia\n\n");
+    SetColor(NONE, FG_YELLOW);
+    printf("===========================\n");
 
     DefaultColor();
 }
@@ -469,9 +384,12 @@ void HeaderKamus()
     SetColor(NONE, FG_GREEN);
     printf("Sunda \t\t");
     SetColor(NONE, FG_CYAN);
-    printf("Indonesia \t");
-    SetColor(NONE, FG_BLUE);
+    printf("Indonesia\n");
+    SetColor(NONE, FG_WHITE);
     printf("Contoh \n");
+    SetColor(NONE, FG_YELLOW);
+    printf("===========================\n");
+    DefaultColor();
 }
 
 bool HasChar(String Check, char Contain)
@@ -503,7 +421,7 @@ void LoadDataKamus(Address *Tree)
             StringToKamus(&TempKamus, Buffer);
             InsertToTree(&(*Tree), TempKamus);
         }
-        SuccMsg("Berhasil memuat data kamu pada file Kamus-Sunda-Indonesia.dat\n");
+        SuccMsg("Berhasil memuat data kamus pada file Kamus-Sunda-Indonesia.dat\n");
     }
     fclose(fp);
     Pause();
@@ -530,34 +448,45 @@ int IsFileValid()
             fclose(fp);
             return -1;
         }
-        
-        rewind(fp);
-        while (fscanf(fp, "%[^\n]\n", Buffer) == 1)
-        {
-            Row++;
-            if (CountChar(Buffer, '.') < 2 || CountChar(Buffer, '=') != 1 || CountChar(Buffer, '(') > 1 || CountChar(Buffer, ')') > 1)
-            {
-                fclose(fp);
-                return Row;
-            }
-        }
-        // Cek struktur file nya harud di awali kapital
 
         rewind(fp);
         while (fscanf(fp, "%[^\n]\n", Buffer) == 1)
         {
-            AddressNodeNR KamusSunda = NULL;
-            StringToList(&KamusSunda, Buffer);
-            while (KamusSunda != NULL)
+            Row++;
+            if(HasChar(Buffer, '(') || HasChar(Buffer, ')'))
             {
-                if (KamusSunda->Info[0] >= 'a' && KamusSunda->Info[0] <= 'z')
+                if (CountChar(Buffer, '.') < 2 || CountChar(Buffer, '=') != 1 || CountChar(Buffer, '(') != 1 || CountChar(Buffer, ')') != 1)
                 {
                     fclose(fp);
-                    return -2;
+                    return Row;
                 }
-                KamusSunda = KamusSunda->Next;
+            }
+            else
+            {
+                if (CountChar(Buffer, '.') < 2 || CountChar(Buffer, '=') != 1 || CountChar(Buffer, '(') > 1 || CountChar(Buffer, ')') > 1)
+                {
+                    fclose(fp);
+                    return Row;
+                }
             }
         }
+        // Cek struktur file nya harud di awali kapital
+        // Masih ada bug
+        // rewind(fp);
+        // while (fscanf(fp, "%[^\n]\n", Buffer) == 1)
+        // {
+        //     AddressNodeNR KamusSunda = NULL;
+        //     StringToList(&KamusSunda, Buffer);
+        //     while (KamusSunda != NULL)
+        //     {
+        //         if (KamusSunda->Info[0] >= 'a' && KamusSunda->Info[0] <= 'z')
+        //         {
+        //             fclose(fp);
+        //             return -2;
+        //         }
+        //         KamusSunda = KamusSunda->Next;
+        //     }
+        // }
     }
     return 0;
 }
@@ -599,6 +528,7 @@ int RefactorFile()
 {
     FILE *fp;
     fp = fopen(FileKamus, "r+");
+    remove("TempFile.dat");
 
     if (fp == NULL)
     {
@@ -657,17 +587,22 @@ void StringToKamus(Kamus *NewKamus, String Vocab)
 void CheckAndLoadFile(Address *Tree)
 {
     remove("TempFile.dat");
-    bool Sukses = false;
+    bool Sukses;
     do
     {
+        Sukses = false;
         system("cls");
+        Banner();
         SuccMsg("Sedang melakukan pengecekan file Kamus-Sunda-Indonesia.dat...\n");
         int Row = IsFileValid();
         SuccMsg("\nPengecekan sudah selesai...\n");
         if (Row == 0)
         {
+            SuccMsg("\nMelakukan penulisan ulang data pada file...\n");
+            RefactorFile();
             SuccMsg("File tidak bermasalah...\n");
             SuccMsg("Memuat data...\n");
+            sleep(2);
             LoadDataKamus(&(*Tree));
             Sukses = true;
         }
@@ -675,15 +610,15 @@ void CheckAndLoadFile(Address *Tree)
         {
             ErrorMsg("Tidak dapat memuat apapun, file masih kosong\n");
         }
-        else if (Row == -2)
-        { // Harus melakukan refactor terhadap- file
-            ErrorMsg("Ada kesalahan huruf kapital kosakata pada file Kamus-Sunda-Indonesia.dat\n");
-            SuccMsg("Sedang melakukan penulisan ulang...\n");
-            if (RefactorFile())
-                SuccMsg("Berhasil melakukan penulisan ulang...\n");
-            else
-                ErrorMsg("Gagal melakukan penulisan ulang...\n");
-        }
+        // else if (Row == -2) // Bug
+        // { // Harus melakukan refactor terhadap- file
+        //     ErrorMsg("Ada kesalahan huruf kapital kosakata pada file Kamus-Sunda-Indonesia.dat\n");
+        //     SuccMsg("Sedang melakukan penulisan ulang...\n");
+        //     if (RefactorFile())
+        //         SuccMsg("Berhasil melakukan penulisan ulang...\n");
+        //     else
+        //         ErrorMsg("Gagal melakukan penulisan ulang...\n");
+        // }
         else
         {
             char Str[10];
@@ -691,6 +626,7 @@ void CheckAndLoadFile(Address *Tree)
             ErrorMsg("Ada kesalahan format teks pada file Kamus-Sunda-Indonesia.dat\n");
             ErrorMsg("Silahkan perbaiki format teks pada file tersebut pada Baris ke ");
             ErrorMsg(Str);
+            printf("\n");
         }
         if (!Sukses)
         {
@@ -743,4 +679,207 @@ void SearchKata(Address Tree)
     Pause();
 }
 
+Address EditTree(Address Tree)
+{
+    char KataL[MAX_BUFFER], KataB[MAX_BUFFER], Sunda[MAX_BUFFER], Contoh[MAX_BUFFER];
+    // char pilihan;
+    // String A;
+    // A = AlokString(strlen(KataL)+1);
+    printf("Masukkan kata yang ingin diedit : ");
+    scanf(" %[^\n]", KataL);
+    KataL[0] = toupper(KataL[0]);
+
+    Address Temp = SearchTree(Tree, KataL);
+    if(Temp == NULL)
+    {
+        printf("Kata tidak ditemukan!");
+        return NULL;
+    }
+    else
+    {
+        printf("Kamus sebelum diedit \n");
+        PrintKamus(Temp->Kamus);
+
+        printf("Apakah ingin mengedit kata bahasa Sunda, terjemahan dan contoh kalimatnya?\n");
+
+        if (!Validasi())
+        {
+            printf("Masukkan kata terjemahan baru : ");
+            scanf(" %[^\n]", KataB);
+            free(Temp->Kamus.Indonesia);
+            Temp->Kamus.Indonesia = AlokString(strlen(KataB) + 2);
+            strcpy(Temp->Kamus.Indonesia, KataB);
+            strcat(Temp->Kamus.Indonesia, ".");
+        }
+        else //jika memilih diubah sunda dan contoh
+        {
+            printf("Masukkan kata terjemahan baru: ");
+            scanf(" %[^\n]", KataB);
+            free(Temp->Kamus.Indonesia);
+            Temp->Kamus.Indonesia = AlokString(strlen(KataB) + 2);
+            strcpy(Temp->Kamus.Indonesia, KataB);
+            strcat(Temp->Kamus.Indonesia, ".");
+
+            printf("Masukkan kata bahasa Sunda baru: ");
+            scanf(" %[^\n]", Sunda);
+            free(Temp->Kamus.Sunda);
+            Temp->Kamus.Sunda = AlokString(strlen(Sunda) + 2);
+            strcpy(Temp->Kamus.Sunda, Sunda);
+
+            printf("Masukkan contoh kalimat baru: ");
+            scanf(" %[^\n]", Contoh);
+            free(Temp->Kamus.Contoh);
+            Temp->Kamus.Contoh = AlokString(strlen(Contoh) + 2);
+            strcpy(Temp->Kamus.Contoh, Contoh);
+            strcat(Temp->Kamus.Contoh, ".");
+        }
+        system("cls");
+        SuccMsg("Berhasil melakukan pengeditan!!\n");
+        printf("Data kamus setelah diedit\n");
+        PrintKamus(Temp->Kamus);
+        Pause();
+    }
+    SaveTreeToFile(Tree,"Kamus-Sunda-Indonesia.dat");
+    return Tree;
+}
 /*=================================================*/
+
+/*================= Retra =======================*/
+Address DeleteFromTree(Address *Root, String Input)
+{
+    Address TempTree;
+    TempTree = SearchTree((*Root), Input);
+    if (TempTree != NULL)
+    {
+        if ((*Root) == NULL)
+        {
+            return (*Root);
+        }
+        else if(strcmp(Input, (*Root)->Kamus.Sunda) < 0)
+        {
+            (*Root)->Left = DeleteFromTree(&(*Root)->Left, Input);
+        }
+        else if (strcmp(Input, (*Root)->Kamus.Sunda) > 0)
+        {
+            (*Root)->Right = DeleteFromTree(&(*Root)->Right, Input);
+        }
+        else
+        {
+            // Kasus 1: Leaf node
+            if ((*Root)->Left == NULL && (*Root)->Right == NULL)
+            {
+                free((*Root));
+                (*Root) = NULL;
+            }
+            // Kasus 2: Node memiliki satu anak
+            else if ((*Root)->Left == NULL)
+            {
+                Address temp = (*Root);
+                (*Root) = (*Root)->Right;
+                free(temp);
+            }
+            else if ((*Root)->Right == NULL)
+            {
+                Address temp = (*Root);
+                (*Root) = (*Root)->Left;
+                free(temp);
+            }
+            // Kasus 3: Node memiliki dua anak
+            else
+            {
+                Address temp = minValueTree((*Root)->Right);
+                (*Root)->Kamus = temp->Kamus;
+                (*Root)->Right = DeleteFromTree(&(*Root)->Right, temp->Kamus.Sunda);
+            }
+        }
+        printf("Kata '%s' berhasil terhapus\n", Input);
+        printf("Data kamus setelah dihapus\n");
+        PrintTree(*Root);
+        Pause();
+        return (*Root);
+    }
+    else
+    {
+        ErrorMsg("Kata Tidak Ditemukan!\n"); // kalo tidak ditemukan
+    }
+    return *Root;
+}
+
+Address minValueTree(Address Root)
+{
+    Address current = Root;
+    while (current->Left != NULL)
+    {
+        current = current->Left;
+    }
+    return current;
+}
+
+void printTreeGraph(Address Root, int level,int lastLevel) 
+{
+    if (Root != NULL) 
+    {
+        printTreeGraph(Root->Left, level + 1, lastLevel);
+        int distance = 2 * (level - 1);
+        if (level > lastLevel) {
+            printf("\n");
+            printDistance(distance);
+            lastLevel = level;
+        }
+        printf("%s", Root->Kamus.Sunda);
+        printTreeGraph(Root->Right, level + 1, lastLevel);
+    }
+}
+
+void printTreeWithRoot(Address Root) 
+{
+    if (Root != NULL) {
+        printf("%s\n", Root->Kamus.Sunda);
+        int distance = 2 * (height(Root) - 1);
+        if (distance != 0)  
+        {
+            printDistance(distance);
+            printTreeGraph(Root->Left, 2, 1);
+            printf("\n");
+            printDistance(distance);
+            printTreeGraph(Root->Right, 2, 1);
+        }
+    }
+}
+
+void printDistance(int distance) {
+    for (int i = 0; i < distance; i++) {
+        printf("-");
+    }
+}
+
+
+/*=================================================*/
+
+/*================= Naila x Retra =======================*/
+void CopyTreeToFile(Address Tree, FILE *f) {
+    if (Tree != NULL) {
+        if (Tree->Kamus.Contoh == NULL)
+        {
+            fprintf(f, "%s.=%s\n", Tree->Kamus.Sunda, Tree->Kamus.Indonesia);
+        }
+        else{
+            fprintf(f, "%s.=%s(%s)\n", Tree->Kamus.Sunda, Tree->Kamus.Indonesia, Tree->Kamus.Contoh);
+        }
+        CopyTreeToFile(Tree->Left, f);
+        CopyTreeToFile(Tree->Right, f);
+    }
+}
+
+void SaveTreeToFile(Address Tree, String file) {
+    FILE *f = fopen(file, "w");
+    if (f == NULL) {
+        printf("File tidak dapat dibuka!\n");
+        return;
+    }
+
+    CopyTreeToFile(Tree, f);
+
+    fclose(f);
+}
+/*=======================================================*/

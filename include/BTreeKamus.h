@@ -1,8 +1,3 @@
-#ifndef BTREEKAMUS_H
-#define BTREEKAMUS_H
-#include <windows.h>
-#include <stdbool.h>
-#include "NonRestricted.h"
 /* Informasi Author
     Nama        :   1. Roy Aziz Barera (Ketua)  221524030
                     2. Naila Saniyah Nur'aini   221524024
@@ -11,6 +6,46 @@
     Prodi       :   D4 Teknik Informatika
     Tanggal     :   29/3/2023
 */
+
+#ifndef BTREEKAMUS_H
+#define BTREEKAMUS_H
+#include "NonRestricted.h"
+
+#include <math.h>
+#include <windows.h>
+#include <stdbool.h>
+#include <conio.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
+
+/* Define Kode Warna */
+#define FG_BLACK 0x00
+#define FG_BLUE 0x01
+#define FG_GREEN 0x02
+#define FG_CYAN 0x03
+#define FG_RED 0x04
+#define FG_MAGENTA 0x05
+#define FG_YELLOW 0x06
+#define FG_WHITE 0x07
+
+#define BG_BLACK 0x00
+#define BG_BLUE 0x10
+#define BG_GREEN 0x20
+#define BG_CYAN 0x30
+#define BG_RED 0x40
+#define BG_MAGENTA 0x50
+#define BG_YELLOW 0x60
+#define BG_WHITE 0x70
+
+#define NONE 0
+
+/* End Define*/
+
+
 #define MAX_BUFFER 1024
 typedef char *String;
 
@@ -65,7 +100,11 @@ void DeleteBalancing(AddressBalancing *Balancing, String Target);
     I.S: Node yang memiliki informasi yang sama dengan target belum terhapus
     I.S: Node yang memiliki informasi yang sama dengan target sudah terhapus
 */
-
+void DeleteAllTree(Address *Tree);
+/* Menghapus seluruh isi tree
+    I.S: Seluruh isi di dalam tree belum terhapus
+    F.S: Seluruh isi di dalam tree sudah terhapus
+*/
 void BalancingTree(Address *Tree);
 /* Mengubah struktur data tree yang tidak balance menjadi balance
     I.S: Struktur tree belum balance
@@ -246,18 +285,6 @@ void InsertBinaryTree(Address *Tree, Kamus NewKamus, String VocabSunda, int Heig
     F.S: Alamat binary tree yang baru sudah masuk ke dalam sturktur data
 */
 
-void PrintTree(Address Root);
-/* Mencetak isi dari binary tree menggunakan teknik rekursif
-    I.S: Nilai yang ada di dalam alamat struktur data yang ada di dalam parameter belum tampil ke layar
-    F.S: Nilai yang ada di dalam alamat struktur data yang ada di dalam parameter sudah tampil ke layar
-*/
-
-void PrintKamus(Kamus Kamus);
-/* Menampilkan isi dari variabel kamus yang terdiri dari string sunda, indonesia dan contoh
-    I.S: Isi dari nilai yang ada di kamus belum tampil ke layar
-    F.S: Isi dari nilai yang ada di kamus sudah tampil ke layar
-*/
-
 void HeaderKamus();
 /* Menampilkan header kamus ke layar
     I.S: Header kamus belum tampil ke layar
@@ -297,10 +324,17 @@ void StringToList(AddressNodeNR *List, String Vocab);
 */
 
 void StringToKamus(Kamus *NewKamus, String Vocab);
+// Mengubah string yang ada menjadi pecahan tipe data Kamus
 int RefactorFile();
+// Mengubah format file yang ada di dalam Kamus-Sunda-Indonesia.dat (Huruf non kapital menjadi kapital di awal)
 void CheckAndLoadFile(Address *Tree);
-// void StringToUpper(char Vocab[]);
-
+// Mengecek dan memuat data yang ada di dalam file Kamus-Sunda-Indonesia.dat
+void Banner();
+/* Menampilkan banner program */
+void PrintStatusProgram(Address Tree);
+// menampilkan status kinerja program saat ini dengan menghitung berapa jumlah maksimal suatu node dengan rumus log2(n) n adalah jumlah node yang ada
+int CountNode(Address Tree);
+// menghitung jumlah node yang ada saat ini di dalma tree
 /* ==================================================== */
 /* ==================================================== */
 
@@ -309,6 +343,38 @@ void CheckAndLoadFile(Address *Tree);
 /*================Naila================================ */
 Address SearchTree(Address Root, String Input);
 void SearchKata(Address Tree);
+Address EditTree(Address Tree);
+
 /*================Naila================================ */
+/*================= Retra =======================*/
+Address DeleteFromTree(Address *Root, String Input);
+/* Menghapus kosakata yang 
+    I.S : Kosakata masih terdapat dalam struktur data tree dan dalam file txt
+    F.S : Kosakata sudah hilang dalam struktur data tree maupun dalam file txt
+*/
+// void DeleteFromFile(String Input);
+
+Address minValueTree(Address Root);
+
+void printTreeGraph(Address Root, int CurrentLevel, int LastLevel);
+void printTreeWithRoot(Address Root);
+void printDistance(int spaces);
+void PrintTree(Address Root);
+/* Mencetak isi dari binary tree menggunakan teknik rekursif
+    I.S: Nilai yang ada di dalam alamat struktur data yang ada di dalam parameter belum tampil ke layar
+    F.S: Nilai yang ada di dalam alamat struktur data yang ada di dalam parameter sudah tampil ke layar
+*/
+
+void PrintKamus(Kamus Kamus);
+/* Menampilkan isi dari variabel kamus yang terdiri dari string sunda, indonesia dan contoh
+    I.S: Isi dari nilai yang ada di kamus belum tampil ke layar
+    F.S: Isi dari nilai yang ada di kamus sudah tampil ke layar
+*/
+/*===============================================*/
+/*================= Naila x Retra =======================*/
+void CopyTreeToFile(Address Tree, FILE *f);
+void SaveTreeToFile(Address Tree, String file);
+/*=======================================================*/
+
 
 #endif // !BTREEKAMUS_H

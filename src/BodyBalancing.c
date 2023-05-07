@@ -84,6 +84,16 @@ void DeleteBalancing(AddressBalancing *Balancing, String Target)
     }
 }
 
+void DeleteAllTree(Address *Tree)
+{
+    if((*Tree) != NULL)
+    {
+        DeleteAllTree(&(*Tree)->Left);
+        DeleteAllTree(&(*Tree)->Right);
+        free((*Tree));
+    }
+}
+
 void BalancingTree(Address *Tree)
 {
     /* Masukan seluruh yang ada di tree ke dalam linked list
@@ -95,7 +105,7 @@ void BalancingTree(Address *Tree)
         AddressBalancing ListBalancing = InitBalance();
         SortBalancing((*Tree), &ListBalancing);
         /* Hapus semua isi tree karena akan diisi oleh tree baru */
-        // Sementara null kan saja
+        DeleteAllTree(&(*Tree));
         *Tree = NULL;
         /* InsertTreeBalancing yang baru */
         if (ListBalancing != NULL)
@@ -134,14 +144,17 @@ void InsertTreeBalancing(Address *Tree, AddressBalancing *ListBalancing)
         AddressBalancing ListRight = InitBalance();
 
         InsertBinaryTree(&(*Tree), Root->Kamus, Root->Kamus.Sunda, 1);
+
         if (Root != NULL)
         {
+            // Mengisi list bagian kiri dan kanan
             if (strcmp(Root->Kamus.Sunda, (*ListBalancing)->Kamus.Sunda) != 0)
                 ListLeft = *ListBalancing;
             else
                 ListLeft = NULL;
             ListRight = Root->Next;
             PrevRoot = ListLeft;
+
             while (PrevRoot != NULL)
             {
                 if (PrevRoot->Next != NULL && Root != NULL)
