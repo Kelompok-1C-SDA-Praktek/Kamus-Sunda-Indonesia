@@ -20,7 +20,7 @@ int CountNode(Address Tree)
 void PrintStatusProgram(Address Tree)
 {
     int Height = height(Tree);
-    int MaxHeight = round(log2(CountNode(Tree)));
+    int MaxHeight = ceil(log2(CountNode(Tree)))+1;
     printf("Jumlah tree saat ini : %d\n", CountNode(Tree));
     printf("Ketinggian maksimum tree saat ini harus : %d\n", MaxHeight);
     printf("Ketinggian tree saat ini : %d\n", Height);
@@ -433,7 +433,7 @@ int IsFileValid()
     fp = fopen(FileKamus, "r");
     if (fp == NULL)
     {
-        ErrorMsg("Gagal melakukan proses pengecekan file Kamus-Sunda-Indonesia.dat");
+        ErrorMsg("Gagal melakukan proses pengecekan file Kamus-Sunda-Indonesia.dat mungkin file tidak ada.");
         fclose(fp);
         Pause();
         return false;

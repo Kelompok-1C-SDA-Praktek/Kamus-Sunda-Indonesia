@@ -100,7 +100,6 @@ void Pause()
 {
     SetColor(BG_GREEN, FG_BLACK);
     printf("\nTekan tombol apapun untuk melanjutkan...\n");
-    Koor(0, 0);
     getch();
     DefaultColor();
     fflush(stdin);
