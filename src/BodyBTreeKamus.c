@@ -21,6 +21,7 @@ void PrintStatusProgram(Address Tree)
 {
     int Height = height(Tree);
     int MaxHeight = ceil(log2(CountNode(Tree)))+1;
+    if (Height == 0) MaxHeight = 0;
     printf("Jumlah tree saat ini : %d\n", CountNode(Tree));
     printf("Ketinggian maksimum tree saat ini harus : %d\n", MaxHeight);
     printf("Ketinggian tree saat ini : %d\n", Height);
