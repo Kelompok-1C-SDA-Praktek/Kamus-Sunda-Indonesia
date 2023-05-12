@@ -180,12 +180,13 @@ DefaultColor();
 Koor(7,40); printf("Selamat Datang Di Aplikasi Kamus Bahasa\n");
 Koor(8,50); printf("Sunda - Indonesia\n\n\n");
 
-Koor(11,37);  printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 201,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,187);
-Koor(12,37);  printf("%c                                            %c\n", 186, 186);
-Koor(13,37);  printf("%c                   Credit:                  %c\n", 186, 186);
-Koor(14,37);  printf("%c 1. Roy Aziz Barera             (221524030) %c\n", 186, 186);
-Koor(15,37);  printf("%c 2. Naila Saniyyah Nur'Aini     (221524024) %c\n", 186, 186);
-Koor(16,37);  printf("%c 3. Retryanzani Dwi Fauzan      (221524028) %c\n", 186, 186);
-Koor(17,37);  printf("%c                                            %c\n", 186, 186);
-Koor(18,37);  printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 200,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,188);
+Koor(10,37);  printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 201,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,187);
+Koor(11,37);  printf("%c                                            %c\n", 186, 186);
+Koor(12,37);  printf("%c                   Credit:                  %c\n", 186, 186);
+Koor(13,37);  printf("%c 1. Roy Aziz Barera             (221524030) %c\n", 186, 186);
+Koor(14,37);  printf("%c 2. Naila Saniyyah Nur'Aini     (221524024) %c\n", 186, 186);
+Koor(15,37);  printf("%c 3. Retryanzani Dwi Fauzan      (221524028) %c\n", 186, 186);
+Koor(16,37);  printf("%c                                            %c\n", 186, 186);
+Koor(17,37);  printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 200,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,205,188);
+Koor(18,25);  printf("https://github.com/Kelompok-1C-SDA-Praktek/Kamus-Sunda-Indonesia.git\n");
 }
