@@ -72,7 +72,7 @@ typedef struct balancing
 
 AddressBalancing InitBalance();
 /* Menginisialisasikan variabel bertipe AddressBalancing menjadi NULL
-    I.S: Function sudah mengembalikan nilai NULL
+    I.S: Function belum mengembalikan nilai NULL
     F.S: Function sudah mengembalikan nilai NULL
 */
 
@@ -325,8 +325,15 @@ void StringToList(AddressNodeNR *List, String Vocab);
 
 void StringToKamus(Kamus *NewKamus, String Vocab);
 // Mengubah string yang ada menjadi pecahan tipe data Kamus
+/* I.S: Kamus belum terisi nilai
+   F.S: Kamus sudah terisi nilai
+*/
+
 int RefactorFile();
 // Mengubah format file yang ada di dalam Kamus-Sunda-Indonesia.dat (Huruf non kapital menjadi kapital di awal)
+// I.S: Kata di dalam file belum memiliki huruf kapital diawal
+// F.S: Kata di dalam file sudah memiliki huruf kapital diawal
+
 void CheckAndLoadFile(Address *Tree);
 // Mengecek dan memuat data yang ada di dalam file Kamus-Sunda-Indonesia.dat
 void Banner();
@@ -342,23 +349,54 @@ int CountNode(Address Tree);
 
 /*================Naila================================ */
 Address SearchTree(Address Root, String Input);
+/*Mencari kosakata pada tree secara rekursif dengan binary search tree
+    I.S : Belum mengembalikann alamat dari node yang dicari
+    F.S : Sudah mengembalikan alamat dari node yang telah dicari
+*/
 void SearchKata(Address Tree);
+/*Melakukan pencarian kata berdasarkan inputan user yang kemudian akan dicari pada tree
+    I.S : User diminta untuk memasukkan kata yang ingin dicari
+    F.S : Kata yang dicari user ditemukan pada tree
+*/
 Address EditTree(Address Tree);
+/*Melakukan pengeditan kata bahasa sunda, indonesia, dan contoh kalimatnya jika user melakukan kesalahan dalam menginput kata
+    I.S : Kata pada tree masih dalam keadaan salah
+    F.S : Kata pada tree telah berubah dengan kata yang benar
+*/
 
 /*================Naila================================ */
+
 /*================= Retra =======================*/
 Address DeleteFromTree(Address *Root, String Input);
-/* Menghapus kosakata yang 
+/* Modul ini digunakan untuk Menghapus kata yang sudah ada dalam binary tree 
     I.S : Kosakata masih terdapat dalam struktur data tree dan dalam file txt
     F.S : Kosakata sudah hilang dalam struktur data tree maupun dalam file txt
 */
-// void DeleteFromFile(String Input);
 
 Address minValueTree(Address Root);
+/* Modul ini digunakan untuk mencari nilai node yang paling kecil 
+    I.S : Root semula dan belum diproses 
+    F.S : Node yang sudah dicari dalam root dan nilai nya paling kecil 
+*/
 
 void printTreeGraph(Address Root, int CurrentLevel, int LastLevel);
+/* Modul ini digunakan untuk menampilkan ke dalam layar data dalam binary search tree seperti grafik binary search tree secara rekursif 
+    I.S : Seluruh node masih tertampung dalam tree dan belum ditampilkan ke layar
+    F.S : Seluruh node ditampilkan ke layar seperti bentuk grafik 
+*/ 
+
 void printTreeWithRoot(Address Root);
+/* Modul ini digunakan untuk mencetak seluruh data dalam binary search tree dengan root pada bagian paling atas dan diikuti dibawahnya yaitu node bagian kanan dan kiri root. 
+    I.S : Seluruh node masih tertampung dalam tree dan belum ditampilkan ke layar
+    F.S : Seluruh node ditampilkan ke layar seperti bentuk grafik 
+*/ 
+
 void printDistance(int spaces);
+/* Modul ini digunakan untuk menampilkan suatu garis sebagai penanda suatu depth pada node di binary search tree 
+    I.S : Belum tertampilkan suatu garis pada layar 
+    F.S : Tertampilkan suatu garis pada layar sesuai dnegan depth dan berada tepat pada samping kata kamus sunda 
+*/ 
+
 void PrintTree(Address Root);
 /* Mencetak isi dari binary tree menggunakan teknik rekursif
     I.S: Nilai yang ada di dalam alamat struktur data yang ada di dalam parameter belum tampil ke layar
@@ -371,9 +409,19 @@ void PrintKamus(Kamus Kamus);
     F.S: Isi dari nilai yang ada di kamus sudah tampil ke layar
 */
 /*===============================================*/
+
 /*================= Naila x Retra =======================*/
 void CopyTreeToFile(Address Tree, FILE *f);
+/* Modul ini digunakan untuk menyalin data / menuliskan data tree ke kamus
+    I.S: Isi tree belum dilakukan penyalinan 
+    F.S: Isi tree telah dilakukan penyalinan
+*/
+
 void SaveTreeToFile(Address Tree, String file);
+/* Modul ini digunakan untuk menyimpan data tree kedalam file kamus
+    I.S: Isi dari tree belum tersalin di file
+    F.S: Isi dari tree sudah dilakukan penyalinan ke file
+*/
 /*=======================================================*/
 
 
